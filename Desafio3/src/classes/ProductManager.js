@@ -8,29 +8,34 @@ class ProductManager {
   #filePath;
   constructor() {
     this.#filePath = "./files/products.json";
-    this.#products = this.getProductsFromFile();
+    this.#products = [];
+  }
+
+  async init() {
+    this.#products = await this.getProductsFromFileAsync();
   }
 
   // CRUD - Create, Read, Update, Delete
   // Create
 
-  getProductsFromFile = () => {
+  getProductsFromFileAsync = async () => {
     try {
-      if (fs.existsSync(this.#filePath)) {
-        return JSON.parse(fs.readFileSync(this.#filePath), {
-          encoding: "utf-8",
-        });
-      } else {
-        return [];
-      }
+      let fileContent = await fs.promises.readFile(this.#filePath, {
+        encoding: "utf-8",
+      });
+      return JSON.parse(fileContent);
     } catch (error) {
-      console.log("Error reading file:  ", error);
+      console.log("Error reading file: ", error);
+      return []; // Return an empty array if reading fails
     }
   };
 
-  #saveProductsInFile = () => {
+  #saveProductsInFileAsync = async () => {
     try {
-      fs.writeFileSync(this.#filePath, JSON.stringify(this.#products));
+      await fs.promises.writeFile(
+        this.#filePath,
+        JSON.stringify(this.#products)
+      );
     } catch (error) {
       console.log("Error saving file:  ", error);
     }
@@ -54,7 +59,7 @@ class ProductManager {
         code,
         stock,
       });
-      this.#saveProductsInFile();
+      await this.#saveProductsInFileAsync();
       console.log("Product successfully added");
     } else {
       console.log("Code " + code + " of " + title + " already exists");
@@ -74,13 +79,13 @@ class ProductManager {
     }
   };
   // Update
-  updateProduct = (id, objectUpdate) => {
+  updateProduct = async (id, objectUpdate) => {
     const oldId = id;
     const index = this.#products.findIndex((x) => x.id === id);
     if (index >= 0) {
       const { id, ...rest } = objectUpdate;
       this.#products[index] = { ...this.#products[index], ...rest };
-      this.#saveProductsInFile();
+      await this.#saveProductsInFileAsync();
       console.log("Product " + oldId + " updated...!");
     } else {
       console.log("Product id " + oldId + " not found...!");
@@ -88,11 +93,11 @@ class ProductManager {
   };
 
   // Delete
-  deleteProductById = (id) => {
+  deleteProductById = async (id) => {
     const index = this.#products.findIndex((x) => x.id === id);
     if (index >= 0) {
       this.#products = this.#products.filter((x) => x.id !== id);
-      this.#saveProductsInFile();
+      this.#saveProductsInFileAsync();
       console.log("Producto: " + id + " eliminado");
     } else {
       console.log("id: " + id + " not found ");
