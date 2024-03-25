@@ -17,20 +17,20 @@ loadProducts();
 
 // get products
 app.get("/products", (req, res) => {
-  try {
-    let limit = req.query.limit;
-    let products = arrayProducts.getProducts();
-    if (isNaN(limit)) {
-      return res.json({ error: "Pls, enter a numeric id..." });
+    try {
+      let products = arrayProducts.getProducts();
+      if (req.query.limit) { // Check if 'limit' exists in the request query
+        const limit = Number(req.query.limit);
+        if (isNaN(limit)) {
+          return res.json({ error: "The 'limit' parameter must be a number" });
+        }
+        products = products.slice(0, limit); // Apply limit if valid
+      }
+      return res.json(products);
+    } catch {
+      return res.json({ error: "Unknown error" }); // Handle any other errors
     }
-    if (limit) {
-      products = products.slice(0, limit);
-    }
-    return res.json(products);
-  } catch {
-    return res.json({ error: "Unkwown error limit" });
-  }
-});
+  });
 
 // Request with Param id
 app.get("/products/:id", (req, res) => {
