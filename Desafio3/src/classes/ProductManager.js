@@ -1,13 +1,14 @@
 // Imports
 const fs = require("fs");
 const { stringify } = require("querystring");
+const {join}= require("path")
 
 // Codigo
 class ProductManager {
   #products;
   #filePath;
   constructor() {
-    this.#filePath = "./files/products.json";
+    this.#filePath = "./src/files/products.json";
     this.#products = [];
   }
 
