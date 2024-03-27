@@ -1,5 +1,6 @@
 const express = require("express");
-const ProductManager = require("../src/classes/ProductManager");
+const {join}= require("path")
+const ProductManager = require(join(__dirname, "classes","ProductManager"));
 
 const PORT = 3000;
 const app = express();

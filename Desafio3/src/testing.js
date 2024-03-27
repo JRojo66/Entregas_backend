@@ -1,5 +1,5 @@
 const ProductManager = require("./classes/ProductManager");
-
+//C:\Documents\Docus\Documents\Nueva_etapa\IT\Coderhouse\Backend\Entregas\Desafio3\src\classes
 // testing
 // crea la instancia
 let arrayProducts = new ProductManager();

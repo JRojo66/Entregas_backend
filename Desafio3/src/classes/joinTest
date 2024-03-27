@@ -1,0 +1,4 @@
+const {join}= require("path")
+let rutaArchivo=join(__dirname, "products.json")
+console.log(rutaArchivo);
+//C:\Documents\Docus\Documents\Nueva_etapa\IT\Coderhouse\Backend\Entregas\Desafio3\src\classes
