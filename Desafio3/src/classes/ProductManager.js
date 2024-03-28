@@ -7,9 +7,10 @@ const path = require('path');
 // Codigo
 class ProductManager {
   #products;
-  #filePath=join(path.join(path.dirname(__dirname), "files"), "products.json");;
+  #filePath;
   constructor() {
     this.#products = [];
+    this.  #filePath=join(path.join(path.dirname(__dirname), "files"), "products.json");
   }
 
   async init() {
