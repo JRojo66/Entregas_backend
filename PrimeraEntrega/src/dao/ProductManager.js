@@ -3,7 +3,7 @@ const fs = require("fs");
 const { stringify } = require("querystring");
 const {dirname, join}= require("path");
 const path = require('path');
-//
+
 // Codigo
 class ProductManager {
   #products;
@@ -38,12 +38,13 @@ class ProductManager {
         this.#filePath,
         JSON.stringify(this.#products)
       );
+      return this.#products
     } catch (error) {
       console.log("Error saving file:  ", error);
     }
   };
 
-  addProduct = async (title, description, price, thumbnail, code, stock) => {
+  addProduct = async ({title, description, code, price, status, stock, category, thumbnails}) => {
     const existingProduct = this.#products.find(
       (element) => element.code === code
     );
@@ -57,14 +58,16 @@ class ProductManager {
         title,
         description,
         price,
-        thumbnail,
+        status,
+        category,
+        thumbnails,
         code,
         stock,
       });
       await this.#saveProductsInFileAsync();
-      console.log("Product successfully added");
+      return `Product ${id}: ${code} - ${title} saved...! `;
     } else {
-      console.log("Code " + code + " of " + title + " already exists");
+      return `Code ${code} - ${title} already exists`;
     }
   };
   //  Read all
@@ -77,30 +80,36 @@ class ProductManager {
     if (product) {
       return product;
     } else {
-      console.log("Not found");
+      return `Product not found...!`
     }
   };
   // Update
   updateProduct = async (id, objectUpdate) => {
     const oldId = id;
-    const index = this.#products.findIndex((x) => x.id === id);
+    const index = this.#products.findIndex((x) => x.id === Number(id));
     if (index >= 0) {
-      const { id, ...rest } = objectUpdate;
-      this.#products[index] = { ...this.#products[index], ...rest };
-      await this.#saveProductsInFileAsync();
-      console.log("Product " + oldId + " updated...!");
+      const existingProduct = this.#products.find((product) => product.code === objectUpdate.code);
+      if(!existingProduct){
+        const { id, ...rest } = objectUpdate;
+        this.#products[index] = { ...this.#products[index], ...rest };
+        await this.#saveProductsInFileAsync();
+        return `Product ${oldId} updated...!`
+      } else {
+        return `Code ${objectUpdate.code} already exists...!`
+      }
     } else {
-      console.log("Product id " + oldId + " not found...!");
+      return `Pruduct id ${oldId} not found...!`
     }
   };
 
   // Delete
   deleteProductById = async (id) => {
+    id = Number(id);
     const index = this.#products.findIndex((x) => x.id === id);
     if (index >= 0) {
       this.#products = this.#products.filter((x) => x.id !== id);
       this.#saveProductsInFileAsync();
-      console.log("Producto: " + id + " eliminado");
+      return `Product ${id} deleted...!`
     } else {
       console.log("id: " + id + " not found ");
     }
