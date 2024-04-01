@@ -1,58 +1,69 @@
-import { Router } from 'express';
-import CartManager from '../dao/CartManager.js';
-export const router=Router();
+import { Router } from "express";
+import __dirname from "../utils.js";
+import {join} from "path";
+import CartManager from "../dao/CartManager.js";
+import ProductManager from "../dao/ProductManager.js";
+export const router = Router();
 
 // Instanciates
-let arrayCart = new CartManager("./src/data/cart.json");
+let arrayCart = new CartManager(join(__dirname,"data","cart.json"));
+let arrayProducts = new ProductManager(join(__dirname,"data","products.json"));
 
-// Loads Products
-async function loadCart() {
+// Loads cart
+async function loadCartAndProducts() {
   await arrayCart.init();
+  await arrayProducts.init();
 }
-loadCart();
+loadCartAndProducts();
 
-// get products
+// get cart
 router.get("/", (req, res) => {
-    try {
-      let cart = arrayCart.getCart();
-      if (req.query.limit) {
-        // Check if 'limit' exists in the request query
-        const limit = Number(req.query.limit);
-        if (isNaN(limit)) {
-          return res.json({ error: "The 'limit' parameter must be a number" });
-        }
-        cart = cart.slice(0, limit); // Apply limit if valid
+  try {
+    let cart = arrayCart.getCart();
+    if (req.query.limit) {
+      // Check if 'limit' exists in the request query
+      const limit = Number(req.query.limit);
+      if (isNaN(limit)) {
+        return res.json({ error: "The 'limit' parameter must be a number" });
       }
-      return res.json(cart);
-    } catch {
-      return res.json({ error: "Unknown error" }); // Handle any other errors
+      cart = cart.slice(0, limit); // Apply limit if valid
     }
-  });
+    return res.json(cart);
+  } catch {
+    return res.json({ error: "Unknown error" }); // Handle any other errors
+  }
+});
 
-  router.get("/:cid", (req, res) => {
-    let cid = req.params.cid;
-    cid = Number(cid);
+router.get("/:cid", (req, res) => {
+  let cid = req.params.cid;
+  cid = Number(cid);
 
-    if (isNaN(cid)) {
-      return res.json({ error: "Pls, enter a numeric id..." });
+  if (isNaN(cid)) {
+    return res.json({ error: "Pls, enter a numeric id..." });
+  }
+  try {
+    let cart = arrayCart.getCartById(cid);
+    if (!cart) {
+      return res.json({ message: `cart id ${cid} not found` });
+    } else {
+      res.json(cart);
     }
-    try {
-      let cart = arrayCart.getCartById(cid);
-      if (!cart) {
-        return res.json({ message: `cart id ${cid} not found` });
-      } else {
-        res.json(cart);
-      }
-    } catch {
-      return res.json({ error: "Unkwown error params" });
-    }
-  });
+  } catch {
+    return res.json({ error: "Unkwown error params" });
+  }
+});
 
-  router.post("/:cid/product/:id", async (req,res) => {
-    let cid = req.params.cid;
-    cid = Number(cid);
-    let id = req.params.id;
-    id = Number(id);
-    let cart = await arrayCart.addProductInCart(cid,id)
-    return res.json(cart)
-  });
+// add cart if new - add product to cart if existing
+router.post("/:cid/product/:id", async (req, res) => {    
+  let cid = req.params.cid;
+  cid = Number(cid);
+  let id = req.params.id;
+  id = Number(id);
+  const product = await arrayProducts.getProductById(id);
+  if (typeof product === "object") {
+    let cart = await arrayCart.addProductInCart(cid, id);
+    return res.json(cart);
+  } else {
+    res.status(404).json({ error: `Product with ID ${id} not found` });
+  }
+});

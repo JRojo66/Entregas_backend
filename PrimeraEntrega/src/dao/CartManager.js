@@ -66,9 +66,9 @@ export default class CartManager {
       }
     } else {
       cid = Math.max(...this.#cart.map((m) => m.id)) + 1; // creates id = max cart.id +1
-      this.#cart.push({id: cid, products: [{id: id, qty: 1}]})
+      this.#cart.push({ id: cid, products: [{ id: id, qty: 1 }] });
       await this.#saveCartInFileAsync();
-      return `New Cart added...! Cart id - ${cid}...!`;
+      return `New Cart added...! Cart id:  ${cid}...!`;
     }
   };
 
