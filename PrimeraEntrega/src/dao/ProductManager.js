@@ -1,25 +1,25 @@
 // Imports
-const fs = require("fs");
-const { stringify } = require("querystring");
-const {dirname, join}= require("path");
-const path = require('path');
+import fs from "fs";
+import { stringify } from  "querystring";
+import {dirname, join} from 'path';
+import path from 'path';
 
 // Codigo
-class ProductManager {
+export default class ProductManager {
   #products;
   #filePath;
-  constructor() {
+  constructor(pathProducts) {
     this.#products = [];
-    this.  #filePath=join(path.join(path.dirname(__dirname), "files"), "products.json");
+    this.#filePath=pathProducts;
   }
-
   async init() {
     this.#products = await this.getProductsFromFileAsync();
   }
 
-  // CRUD - Create, Read, Update, Delete
-  // Create
-
+  // File management
+  
+  // Read from file
+  
   getProductsFromFileAsync = async () => {
     try {
       let fileContent = await fs.promises.readFile(this.#filePath, {
@@ -31,27 +31,32 @@ class ProductManager {
       return []; // Return an empty array if reading fails
     }
   };
+  
+  // Save in file
 
   #saveProductsInFileAsync = async () => {
     try {
       await fs.promises.writeFile(
         this.#filePath,
         JSON.stringify(this.#products)
-      );
-      return this.#products
-    } catch (error) {
-      console.log("Error saving file:  ", error);
-    }
-  };
+        );
+        return this.#products
+      } catch (error) {
+        console.log("Error saving file:  ", error);
+      }
+    };
 
-  addProduct = async ({title, description, code, price, status, stock, category, thumbnails}) => {
-    const existingProduct = this.#products.find(
-      (element) => element.code === code
-    );
-    if (!existingProduct) {
-      let id = 1;
+    // CRUD - Create, Read, Update, Delete
+    // Create
+    
+    addProduct = async ({title, description, code, price, status, stock, category, thumbnails}) => {
+      const existingProduct = this.#products.find(
+        (element) => element.code === code
+        );
+        if (!existingProduct) {
+          let id = 1;
       if (this.#products.length !== 0) {
-        id = this.#products[this.#products.length - 1].id + 1; // creates id = lastProduct.id +1
+        id=Math.max(...this.#products.map(m=>m.id))+1; // creates id = max product.id +1
       }
       this.#products.push({
         id,
@@ -80,7 +85,7 @@ class ProductManager {
     if (product) {
       return product;
     } else {
-      return `Product not found...!`
+      return `id ${id} not found...!`
     }
   };
   // Update
@@ -111,7 +116,7 @@ class ProductManager {
       this.#saveProductsInFileAsync();
       return `Product ${id} deleted...!`
     } else {
-      console.log("id: " + id + " not found ");
+      return `id ${id} not found`
     }
   };
 
@@ -120,4 +125,4 @@ class ProductManager {
   };
 }
 
-module.exports = ProductManager;
+

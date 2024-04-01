@@ -1,6 +1,7 @@
-const express = require("express");
-const { join } = require("path");
-const ProductManager = require(join(__dirname, "dao", "ProductManager"));
+import express from "express";
+import { join } from "path";
+import { router as productsRouter } from "./routes/productsRouter.js";
+import { router as cartRouter } from "./routes/cartRouter.js";
 
 const PORT = 8080;
 const app = express();
@@ -8,118 +9,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // allow to receive complex data from url
 
-// Instanciates
-let arrayProducts = new ProductManager();
 
-// Loads Products
-async function loadProducts() {
-  await arrayProducts.init();
-}
-loadProducts();
-
-// get products
-app.get("/api/products", (req, res) => {
-  try {
-    let products = arrayProducts.getProducts();
-    if (req.query.limit) {
-      // Check if 'limit' exists in the request query
-      const limit = Number(req.query.limit);
-      if (isNaN(limit)) {
-        return res.json({ error: "The 'limit' parameter must be a number" });
-      }
-      products = products.slice(0, limit); // Apply limit if valid
-    }
-    return res.json(products);
-  } catch {
-    return res.json({ error: "Unknown error" }); // Handle any other errors
-  }
-});
-
-// Request with Param id
-app.get("/api/products/:id", (req, res) => {
-  let id = req.params.id;
-  id = Number(id);
-  if (isNaN(id)) {
-    return res.json({ error: "Pls, enter a numeric id..." });
-  }
-  try {
-    let product = arrayProducts.getProductById(id); //products.find(p=>p.id===id);
-    if (!product) {
-      return res.json({ message: `id ${id} not found` });
-    } else {
-      res.json(product);
-    }
-  } catch {
-    return res.json({ error: "Unkwown error params" });
-  }
-});
-
-app.post("/api/products/", async (req, res) => {
-  let { title, description, code, price, status, stock, category, thumbnails } =
-    req.body;
-
-  // validation
-  if (!title ||!description ||!code ||!price || typeof status !== "boolean" ||!stock ||!category) {
-    res.setHeader("Content-Type", "application/json");
-    return res
-      .status(400)
-      .json({
-        error: `All fields: title, description, code, price, status, stock and category must be complete`,
-      });
-  }
-
-  // ** Other validations
-  try {
-    //let lastProduct = {title, description, code, price, status, stock, category, thumbnails}
-    let newProduct = await arrayProducts.addProduct({title, description, code, price, status, stock, category, thumbnails});
-
-    res.setHeader("Content-Type", "application/json");
-    return res.status(200).json(newProduct);
-  } catch (error) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(500).json({
-      error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-      detalle: `${error.message}`,
-    });
-  }
-});
-
-app.put("/api/products/:id", async (req, res) => {
-  let id = req.params.id;
-  if (isNaN(id)) {
-    return res.json({ error: "Pls, enter a numeric id..." });
-  }
-  let { title, description, code, price, status, stock, category, thumbnails } =
-    req.body;
-  // validation
-  if (!title ||!description ||!code ||!price || typeof status !== "boolean" ||!stock ||!category){
-    res.setHeader("Content-Type", "application/json");
-    return res
-      .status(400)
-      .json({
-        error: `All fields: title, description, code, price, status, stock and category must be complete`,
-      });
-  }
-  // ** Other validations
-
-  let updatedProduct = await arrayProducts.updateProduct(id, {title, description, code, price, status, stock, category, thumbnails});
-
-  res.setHeader("Content-Type", "application/json");
-  return res.status(200).json(updatedProduct);
-});
-
-app.delete("/api/products/:id", async (req, res) => {
-  let id = req.params.id;
-  if (isNaN(id)) {
-    return res.json({ error: "Pls, enter a numeric id..." });
-  }
-  // validation
-
-  // ** Other validations
-  let deletedProduct = await arrayProducts.deleteProductById(id);
-
-  res.setHeader("Content-Type", "application/json");
-  return res.status(200).json(deletedProduct);
-});
+app.use("/api/products", productsRouter)
+app.use("/api/cart",cartRouter)
 
 app.listen(PORT, () => console.log(`Server on line at port ${PORT}`));
