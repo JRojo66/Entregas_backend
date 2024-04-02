@@ -1,11 +1,14 @@
 import { Router } from "express";
 import __dirname from "../utils.js";
-import {join} from "path";
+import { join } from "path";
 import ProductManager from "../dao/ProductManager.js";
+import validation from "../validation.js";
 export const router = Router();
 
 // Instanciates
-let arrayProducts = new ProductManager(join(__dirname,"data","products.json"));
+let arrayProducts = new ProductManager(
+  join(__dirname, "data", "products.json")
+);
 
 // Loads Products
 async function loadProducts() {
@@ -54,25 +57,23 @@ router.post("/", async (req, res) => {
   let { title, description, code, price, status, stock, category, thumbnails } =
     req.body;
 
-  // validation
-  if (
-    !title ||
-    !description ||
-    !code ||
-    !price ||
-    typeof status !== "boolean" ||
-    !stock ||
-    !category
-  ) {
+  // Validation
+  const errors = validation(
+    title,
+    description,
+    code,
+    price,
+    status,
+    stock,
+    category,
+    thumbnails
+  );
+  if (errors.length > 0) {
     res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({
-      error: `All fields: title, description, code, price, status, stock and category must be complete`,
-    });
+    return res.status(400).json({ errors }); // Return an array of validation errors
   }
 
-  // ** Other validations
   try {
-    //let lastProduct = {title, description, code, price, status, stock, category, thumbnails}
     let newProduct = await arrayProducts.addProduct({
       title,
       description,
@@ -100,35 +101,14 @@ router.put("/:id", async (req, res) => {
   if (isNaN(id)) {
     return res.json({ error: "Pls, enter a numeric id..." });
   }
-  let { title, description, code, price, status, stock, category, thumbnails } =
+  let {title, description, code, price, status, stock, category, thumbnails} =
     req.body;
-  // validation
-  if (
-    !title ||
-    !description ||
-    !code ||
-    !price ||
-    typeof status !== "boolean" ||
-    !stock ||
-    !category
-  ) {
+  const errors = validation(title, description, code, price, status, stock, category, thumbnails);
+  if (errors.length > 0) {
     res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({
-      error: `All fields: title, description, code, price, status, stock and category must be complete`,
-    });
+    return res.status(400).json({ errors }); // Return an array of validation errors
   }
-  // ** Other validations
-
-  let updatedProduct = await arrayProducts.updateProduct(id, {
-    title,
-    description,
-    code,
-    price,
-    status,
-    stock,
-    category,
-    thumbnails,
-  });
+  let updatedProduct = await arrayProducts.updateProduct(id, {title, description, code, price, status, stock, category, thumbnails});
 
   res.setHeader("Content-Type", "application/json");
   return res.status(200).json(updatedProduct);
@@ -139,9 +119,7 @@ router.delete("/:id", async (req, res) => {
   if (isNaN(id)) {
     return res.json({ error: "Pls, enter a numeric id..." });
   }
-  // validation
 
-  // ** Other validations
   let deletedProduct = await arrayProducts.deleteProductById(id);
 
   res.setHeader("Content-Type", "application/json");

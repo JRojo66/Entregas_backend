@@ -37,7 +37,6 @@ router.get("/", (req, res) => {
 router.get("/:cid", (req, res) => {
   let cid = req.params.cid;
   cid = Number(cid);
-
   if (isNaN(cid)) {
     return res.json({ error: "Pls, enter a numeric id..." });
   }
@@ -57,13 +56,19 @@ router.get("/:cid", (req, res) => {
 router.post("/:cid/product/:id", async (req, res) => {    
   let cid = req.params.cid;
   cid = Number(cid);
+  if(isNaN(cid)){
+    return res.status(400).json({ error: `cart id must me a number` });
+  }
   let id = req.params.id;
   id = Number(id);
+  if(isNaN(id)){
+    return res.status(400).json({ error: `product id must me a number` });
+  }
   const product = await arrayProducts.getProductById(id);
   if (typeof product === "object") {
     let cart = await arrayCart.addProductInCart(cid, id);
     return res.json(cart);
   } else {
-    res.status(404).json({ error: `Product with ID ${id} not found` });
+    return res.status(404).json({ error: `Product with ID ${id} not found` });
   }
 });

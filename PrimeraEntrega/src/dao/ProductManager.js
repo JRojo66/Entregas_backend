@@ -102,16 +102,16 @@ export default class ProductManager {
     const oldId = id;
     const index = this.#products.findIndex((x) => x.id === Number(id));
     if (index >= 0) {
-      const existingProduct = this.#products.find(
+      const existingProduct = this.#products.find( // checks if product code exists already in another product
         (product) => product.code === objectUpdate.code
-      );
-      if (!existingProduct) {
+      ); 
+      if (!existingProduct || this.#products[index].code === objectUpdate.code) { //Updates only if product code does not exist in ANOTHER product 
         const { id, ...rest } = objectUpdate;
         this.#products[index] = { ...this.#products[index], ...rest };
         await this.#saveProductsInFileAsync();
         return `Product ${oldId} updated...!`;
       } else {
-        return `Code ${objectUpdate.code} already exists...!`;
+        return `Code ${objectUpdate.code}  exists in another product...!`;
       }
     } else {
       return `Pruduct id ${oldId} not found...!`;
