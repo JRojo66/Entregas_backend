@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from "express"; //lv
 import __dirname from "../utils.js";
 import {join} from "path";
 import CartManager from "../dao/CartManager.js";
@@ -26,7 +26,7 @@ router.get("/", (req, res) => {
       if (isNaN(limit)) {
         return res.json({ error: "The 'limit' parameter must be a number" });
       }
-      cart = cart.slice(0, limit); // Apply limit if valid
+      cart = cart.slice(0, limit); // Apply limit  if  valid
     }
     return res.json(cart);
   } catch {
