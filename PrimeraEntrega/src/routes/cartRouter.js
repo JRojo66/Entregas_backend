@@ -1,4 +1,4 @@
-import { Router } from "express"; //lv
+import { Router } from "express";
 import __dirname from "../utils.js";
 import {join} from "path";
 import CartManager from "../dao/CartManager.js";
