@@ -52,6 +52,16 @@ router.get("/:cid", (req, res) => {
   }
 });
 
+// add 1st cart
+router.post("/", async (req, res) => {    
+  try{
+  let firstCart = await arrayCart.addCart();  
+  return res.json(firstCart);
+  } catch {
+    return res.json({ error: "Cannot create 1st cart" });
+  }
+});
+
 // add cart if new - add product to cart if existing
 router.post("/:cid/product/:id", async (req, res) => {    
   let cid = req.params.cid;
