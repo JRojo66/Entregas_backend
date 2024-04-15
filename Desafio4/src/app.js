@@ -6,6 +6,7 @@ import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js"
 import { Server } from "socket.io";
+import expressSSE from "express-sse";
 
 const PORT = 8080;
 
@@ -23,7 +24,16 @@ app.set("views", __dirname+"/views");
 
 app.use("/", viewsRouter);
 
-app.use("/api/products", productsRouter); // directs /api/products to product router
+// app.use("/api/products", productsRouter); // directs /api/products to product router
+app.use(
+    "/api/products", 
+    (req, res, next) => {
+        req.serverSocket = serverSocket;
+        next();
+      },
+    productsRouter
+);
+
 app.use("/api/cart", cartRouter); // directs /api/cart to cartRouter
 
 const serverHTTP = app.listen(PORT, () => console.log(`Server on line at port ${PORT}`));

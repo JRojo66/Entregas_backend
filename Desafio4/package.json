@@ -2,8 +2,10 @@
   "name": "desafio3",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
+    "start": "node ./src/app.js",
+    "start:dev": "nodemon ./src/app.js", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
@@ -13,6 +15,7 @@
   "dependencies": {
     "express": "^4.19.1",
     "express-handlebars": "^7.1.2",
+    "express-sse": "^0.5.3",
     "socket.io": "^4.7.5"
   }
 }

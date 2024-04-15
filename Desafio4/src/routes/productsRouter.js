@@ -84,7 +84,9 @@ router.post("/", async (req, res) => {
       category,
       thumbnails,
     });
-
+    
+    req.serverSocket.emit("newProduct", arrayProducts.getProducts());
+    
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json(newProduct);
   } catch (error) {
@@ -121,6 +123,8 @@ router.delete("/:id", async (req, res) => {
   }
 
   let deletedProduct = await arrayProducts.deleteProductById(id);
+  
+  req.serverSocket.emit("newProduct", arrayProducts.getProducts());
 
   res.setHeader("Content-Type", "application/json");
   return res.status(200).json(deletedProduct);

@@ -31,4 +31,9 @@ router.get('/', async (req, res) => {
     res.status(200).render('index', {});
 });
 
+router.get('/realtimeproducts', async (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('realtime', {});
+});
+
 export default router;
