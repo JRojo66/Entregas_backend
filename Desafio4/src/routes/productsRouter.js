@@ -85,7 +85,7 @@ router.post("/", async (req, res) => {
       thumbnails,
     });
     
-    req.serverSocket.emit("newProduct", arrayProducts.getProducts());
+    req.serverSocket.emit("newProduct", title);
     
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json(newProduct);

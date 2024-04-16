@@ -6,7 +6,6 @@ import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js"
 import { Server } from "socket.io";
-import expressSSE from "express-sse";
 
 const PORT = 8080;
 
@@ -40,22 +39,3 @@ const serverHTTP = app.listen(PORT, () => console.log(`Server on line at port ${
 //const io = new Server(serverHTTP);
 serverSocket = new Server(serverHTTP);
 
-serverSocket.on('connection', socket =>{
-    console.log(`Client ${socket.id} connected`);    
-    socket.emit("saludo", "Wellcome...! Identify yourself...");
-    socket.on("id",nombre=>{
-        console.log(`Customer  with id ${socket.id} has logged in as ${nombre}`);
-        socket.broadcast.emit("nuevoUsuario",nombre); 
-    });
-    socket.on('nuevoMensaje',(nombre,mensaje)=>{
-        serverSocket.emit("mensaje", nombre, mensaje)
-    })
-}); // end on connection
-
-let temperatura=0;
-setInterval(()=>{
-    // fetch api clima
-    temperatura = Math.floor(Math.random()*6+28);
-    //console.log(temperatura);
-    serverSocket.emit("nuevaLecturaNuevaTemperatura", temperatura)
-}, 1000);

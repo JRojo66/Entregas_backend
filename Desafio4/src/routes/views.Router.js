@@ -17,7 +17,6 @@ async function loadProducts() {
   router.get('/products', async (req, res) => {
     try {
         let products = await arrayProducts.getProducts();
-        let primerProducto = products[0];
         res.setHeader('Content-Type', 'text/html');
         res.status(200).render('home', { products });
     } catch (error) {
@@ -32,8 +31,21 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/realtimeproducts', async (req, res) => {
+    let rtproducts
+    try {
+        rtproducts=arrayProducts.getProducts();
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type','application/json');
+        return res.status(500).json(
+            {
+                error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+            }
+        )
+        
+    }
     res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('realtime', {});
+    res.status(200).render('realtime', {rtproducts});
 });
 
 export default router;
