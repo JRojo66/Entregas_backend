@@ -121,10 +121,20 @@ router.delete("/:id", async (req, res) => {
   if (isNaN(id)) {
     return res.json({ error: "Pls, enter a numeric id..." });
   }
-
-  let deletedProduct = await arrayProducts.deleteProductById(id);
+  let deletedProduct
+  try {
+    deletedProduct = await arrayProducts.deleteProductById(id);
+  } catch (error) {    
+      console.log(error);
+      res.setHeader("Content-Type", "application/json");
+      return res.status(500).json(
+        {
+          error: 'Unexpected error in server - Contact system administrator'
+        }
+      )
+  };
   
-  req.serverSocket.emit("newProduct", arrayProducts.getProducts());
+  req.serverSocket.emit("deletedProduct", arrayProducts.getProducts());
 
   res.setHeader("Content-Type", "application/json");
   return res.status(200).json(deletedProduct);
