@@ -2,7 +2,7 @@ import { Router } from "express";
 import __dirname from "../utils.js";
 import {join} from "path";
 import {CartManagerMONGO as CartManager}from "../dao/CartManagerMONGO.js";
-import {ProductManagerTEST as ProductManager}  from "../dao/ProductManagerTEST.js";
+import {ProductManagerMONGO as ProductManager}  from "../dao/ProductManagerMONGO.js";
 import { cartModel } from "../dao/models/cartModel.js";
 export const router = Router();
 
