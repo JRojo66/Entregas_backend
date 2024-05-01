@@ -41,10 +41,10 @@ router.get("/", async(req, res) => {
   }
 });
 
-router.get("/:cid", (req, res) => {
+router.get("/:cid", (req, res) => { //** REVISAR - TRAE OBJETO VACIO*/
   let cid = req.params.cid;
   if (!isValidObjectId(cid)) {
-    return res.json({ error: "Pls, enter a numeric id..." });
+    return res.json({ error: "Pls, enter a valid id..." });
   }
   try {
     let cart = cartManager.getCartById(cid);
@@ -61,7 +61,7 @@ router.get("/:cid", (req, res) => {
 // add 1st cart
 router.post("/", async (req, res) => {    
   try{
-  let firstCart = await arrayCart.addCart();  
+  let firstCart = await cartManager.addCart();  
   return res.json(firstCart);
   } catch {
     return res.json({ error: "Cannot create 1st cart" });
@@ -69,22 +69,39 @@ router.post("/", async (req, res) => {
 });
 
 // add cart if new - add product to cart if existing
-router.post("/:cid/product/:id", async (req, res) => {    
-  let cid = req.params.cid;
-  cid = Number(cid);
-  if(isNaN(cid)){
-    return res.status(400).json({ error: `cart id must me a number` });
+// router.post("/:cid/product/:id", async (req, res) => {    
+//   let cid = req.params.cid;
+//   if(!isValidObjectId(cid)){
+//     return res.status(400).json({ error: `cart id must be a valid MongoDB _id` });
+//   }
+//   let id = req.params.id;
+//   if(!isValidObjectId(id)){
+//     return res.status(400).json({ error: `product id must be a valid MongoDB _id` });
+//   }
+//   const product = await productManager.getProductsBy({id});
+//   if (typeof product === "object") {
+//     let cart = await cartManager.addProductInCart(cid, id);
+//     return res.json(cart);
+//   } else {
+//     return res.status(404).json({ error: `Product with ID ${id} not found` });
+//   }
+// });
+
+router.post("/:cid/product/:pid", async (req, res) => {
+  let { cid, pid } = req.params;
+  if (!isValidObjectId(cid, pid)) {
+    return res.status(400).json({
+      error: `Enter a valid MongoDB id`,
+    });
   }
-  let id = req.params.id;
-  id = Number(id);
-  if(isNaN(id)){
-    return res.status(400).json({ error: `product id must me a number` });
-  }
-  const product = await arrayProducts.getProductById(id);
-  if (typeof product === "object") {
-    let cart = await arrayCart.addProductInCart(cid, id);
-    return res.json(cart);
-  } else {
-    return res.status(404).json({ error: `Product with ID ${id} not found` });
+
+  try {
+    await cartManager.addProducts(cid, pid);
+    let cartUpdated = await cartManager.getCartById(cid);
+    res.json({ payload: cartUpdated });
+  } catch (error) {
+    res
+      .status(300)
+      .json({ error: `error when adding product ${pid} to cart ${cid}` });
   }
 });

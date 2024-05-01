@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 const cartCollection = "cart";
 const cartSchema = new mongoose.Schema(
     {
-        products: String,
+        products: Array,
     },
     {
         timestamps:true

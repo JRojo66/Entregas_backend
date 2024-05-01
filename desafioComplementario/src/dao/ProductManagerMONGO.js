@@ -62,7 +62,7 @@ export class ProductManagerMONGO {
     status = true,
     stock,
     category,
-    thumbnails = [], // tambien pasar en el body de la request como array
+    thumbnails = [], 
   }) {
     let productAdded = {
       title,
