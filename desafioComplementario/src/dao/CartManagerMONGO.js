@@ -3,6 +3,7 @@ import fs from "fs";
 import { stringify } from "querystring";
 import { dirname, join } from "path";
 import path from "path";
+import { productsModel } from "./models/productsModel.js";
 import { cartModel } from "./models/cartModel.js";
 
 
@@ -10,21 +11,36 @@ import { cartModel } from "./models/cartModel.js";
 export class CartManagerMONGO {
   #cart;
   #filePathCart;
-  constructor(pathCart) {
-    this.#cart = [];
-    this.#filePathCart = pathCart;
-  }
-  async init() {
-    this.#cart = await this.getCart();
-    console.log(this.#cart);
-  }
-
+  // constructor(pathCart) {
+  //   this.#cart = [];
+  //   this.#filePathCart = pathCart;
+  // }
+  // async init() {
+  //   this.#cart = await this.getCart();
+  //   console.log(this.#cart);
+  // }
+  
   // Data Base management
   // Read from Data Base
 
+  // async getCart(){
+  //  return await cartModel.find().lean(); 
+  // }
+
+  
   async getCart(){
-   return await cartModel.find().lean(); 
+    return await cartModel.find().lean();
   }
+
+  // Read by Id
+  getCartById = async (id) => {
+    const cart = await cartModel.find({_id:id})
+    if (cart) {
+      return cart;
+    } else {
+      return `id ${id} not found...!`;
+    }
+  };
 
   // Read form file
   #getCartFromFileAsync = async () => {
@@ -93,18 +109,4 @@ export class CartManagerMONGO {
     }
   };
 
-  //  Read all
-  getCart = () => {
-    return this.#cart;
-  };
-
-  // Read by Id
-  getCartById = (id) => {
-    const cart = this.#cart.find((element) => element.id === id);
-    if (cart) {
-      return cart;
-    } else {
-      return `id ${id} not found...!`;
-    }
-  };
 }
