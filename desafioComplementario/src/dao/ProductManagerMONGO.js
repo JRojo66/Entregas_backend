@@ -9,7 +9,7 @@ import { productsModel } from "./models/productsModel.js";
 export class ProductManagerMONGO {
   #products;
   #filePath;
-  // constructor(pathProducts) { // ** Borrar cuando haya modificado view.router y otros que lo necesitan
+  // constructor(pathProducts) {                                                                                            // ** Borrar?
   //   this.#products = [];
   //   this.#filePath = pathProducts;
   // }
@@ -39,18 +39,6 @@ export class ProductManagerMONGO {
   }
 
   // Save in DataBase
-
-  #saveProducts = async () => {
-    try {
-      await fs.promises.writeFile(
-        this.#filePath,
-        JSON.stringify(this.#products)
-      );
-      return this.#products;
-    } catch (error) {
-      console.log("Error saving file:  ", error);
-    }
-  };
 
   // CRUD - Create, Read, Update, Delete
   // Create

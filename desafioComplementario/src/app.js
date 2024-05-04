@@ -7,8 +7,6 @@ import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js";
 import { router as usuariosRouter} from './routes/usuarios.router.js';
-import { router as testRouter} from './routes/testrouter.js';
-
 import { Server } from "socket.io";
 
 const PORT = 8080;
@@ -39,8 +37,6 @@ app.use(
 app.use("/api/cart", cartRouter); // directs /api/cart to cartRouter
 
 app.use('/api/usuarios',usuariosRouter)
-
-app.use('/api/test',testRouter)
 
 const serverHTTP = app.listen(PORT, () => console.log(`Server on line at port ${PORT}`));
 //const io = new Server(serverHTTP);
