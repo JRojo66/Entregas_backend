@@ -20,6 +20,7 @@ export class CartManagerMONGO {
   }
   
   // Data Base management
+
   // Read from Data Base
   
   async getCart(){
@@ -27,14 +28,19 @@ export class CartManagerMONGO {
   }
 
   // Read by Id
-  getCartById = async (id) => {
-    const cart = await cartModel.find({_id:id})
-    if (cart) {
-      return cart;
-    } else {
-      return `cart id ${id} not found...!`;
-    }
-  };
+  // getCartById = async (cid) => {
+  //   const cart = await cartModel.find({_id:cid})
+  //   console.log("cart in cartmanager", cart);
+  //   if (cart) {
+  //     return cart;
+  //   } else {
+  //     return `cart id ${cid} not found...!`;
+  //   }
+  // };
+
+  getCartBy = async (filter) => {
+    return await cartModel.findOne(filter)
+  }
 
   // CRUD - Create, Read, Update, Delete
 
@@ -47,7 +53,7 @@ export class CartManagerMONGO {
 
   // Create/add product in cart
 
-  async addProducts(cid, pid){
+  async addProducts(cid, pid){                                                                                                // ** Pasar las validaciones al router
     let cart = await cartModel.findOne({_id:cid}); // finds cart cid
     if(cart){
       const product = cart.products.findIndex( // finds product pid
@@ -60,7 +66,6 @@ export class CartManagerMONGO {
             { $inc: { 'products.$.qty': 1 } },
             { new: true } // Return updated document
           )
-          // ** Ver porque no devuelve la respuesta a Postman
           return `Product ${pid} added to cart ${cid}`
         } catch (error) {
           return error;
@@ -70,5 +75,36 @@ export class CartManagerMONGO {
         return `Product ${pid} added to cart ${cid}`
       }    
     }
-  } 
+  }
+
+// Upadate products in cart
+async updateProductsInCart(cid, updatedProducts){
+  try {
+    await cartModel.findByIdAndUpdate(cid, { $set: {products: updatedProducts } }, { new: true })                                   // ** Revisar - Cambia la esturctura. Crea un Objeto con un array
+    return `Cart ${cid} updated with ${JSON.stringify(updatedProducts)}`    
+  } catch (error) {
+    return error;
+  }
 }
+
+  // Delete product in cart
+  async deleteProducts(cid, pid){
+    let cart = await cartModel.findOne({_id:cid}); // finds cart cid
+    if(cart){
+      const product = cart.products.findIndex( // finds product pid
+        (element) => element.id === pid
+      );
+      if(product>-1){
+        cart.products = cart.products.filter(elemento => elemento.id !== pid)
+        await cartModel.findOneAndUpdate(  
+          { _id: cid },
+          { $set: { products: cart.products } },
+          { new: true }) 
+          return `Product ${pid} deleted from cart ${cid}`
+      }    
+    }
+  }
+
+}
+
+

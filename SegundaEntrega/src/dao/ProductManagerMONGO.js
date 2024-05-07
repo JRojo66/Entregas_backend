@@ -17,7 +17,7 @@ export class ProductManagerMONGO {
     this.#products = await this.getProducts();
   }
 
-  // File management
+  // Mongo management
 
   // Read from DataBase
 
@@ -26,14 +26,14 @@ export class ProductManagerMONGO {
   }
   
   // Read by Id from Database
-  getProductById = async (id) => {
-    const product = await productsModel.find({id:id});
-    if (product) {
-      return product;
-    } else {
-      return `id ${id} not found...!`;
-    }
-  };
+  // getProductById = async (id) => {
+  //   const product = await productsModel.find({id:id});
+  //   if (product) {
+  //     return product;
+  //   } else {
+  //     return `id ${id} not found...!`;
+  //   }
+  // };
   getProductsBy = async (filter) => {
     return await productsModel.findOne(filter)
   }
@@ -72,7 +72,7 @@ export class ProductManagerMONGO {
       returnDocument: "after",
     });
   }
-
+  // Delete
   async deleteProducts(productId) {
     return await productsModel.deleteOne({ _id: productId });
   }

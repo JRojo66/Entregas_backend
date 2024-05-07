@@ -4,7 +4,7 @@ import { join } from "path";
 import {ProductManagerMONGO as ProductManager} from "../dao/ProductManagerMONGO.js";
 //import {ProductManagerMEMORY as ProductManager} from "../dao/ProductManagerMEMORY.js";
 import { io } from "../app.js";
-import validation from "../validation.js";
+import {validation} from "../validation.js";
 import { productsModel } from "../dao/models/productsModel.js";
 import { isValidObjectId } from "mongoose";
 export const router = Router();
@@ -114,7 +114,7 @@ router.get("/:id", async(req, res) => {
     return res.json({ error: "Pls, enter a numeric id..." });
   }
   try {
-    let product = await productManager.getProductById(id); //products.find(p=>p.id===id);
+    let product = await productManager.getProductsBy({id:id}); //products.find(p=>p.id===id);
     if (!product) {
       return res.json({ message: `id ${id} not found` });
     } else {

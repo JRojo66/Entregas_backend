@@ -1,4 +1,4 @@
-const validation = (title, description, code, price, status, stock, category, thumbnails) => {
+export const validation = (title, description, code, price, status, stock, category, thumbnails) => {
     const errors = [];
     if (!title) {
       errors.push("Title is required.");
@@ -64,4 +64,3 @@ const validation = (title, description, code, price, status, stock, category, th
     return true;
   }
 
-  export default validation;
