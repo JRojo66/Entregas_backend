@@ -39,7 +39,7 @@ export class CartManagerMONGO {
   // };
 
   getCartBy = async (filter) => {
-    return await cartModel.findOne(filter)
+    return await cartModel.findOne(filter).populate(products.products)
   }
 
   // CRUD - Create, Read, Update, Delete
@@ -83,14 +83,9 @@ async updateProductsInCart(cid, updatedProducts){
     await cartModel.findByIdAndUpdate(cid, updatedProducts, { new: true })                                  
     return `Cart ${cid} updated with ${JSON.stringify(updatedProducts)}`    
   } catch (error) {
-    return error;
+    return "error";
   }
 }
-
-// Update qty in cart
-
-
-
 
   // Delete product in cart
   async deleteProducts(cid, pid){
