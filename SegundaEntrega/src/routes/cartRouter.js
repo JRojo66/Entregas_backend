@@ -100,7 +100,6 @@ if (!cartExists){
   res.setHeader('Content-Type','application/json');
   return res.status(404).json({error:`There is no cart with id: ${cid}`})
 }     
-
 // Adds product in cart                                                                             
   try {
     let cartUpdated = await cartManager.addProducts(cid, pid); 
@@ -130,17 +129,70 @@ router.put("/:cid", async (req, res) => {
     return res.status(404).json({error:`There is no cart with id: ${cid}`})
   }
   // Cart update    
-  let updatedProducts = req.body;
-  const newCart = await cartManager.updateProductsInCart(cid, updatedProducts);    
+  let newProducts = req.body;
+  const newCart = await cartManager.updateProductsInCart(cid, newProducts);    
   return res.json({ payload: `${newCart}` });                                          
 });
 
-
-
-
-
-
-
+// Update qty in a product in cart
+router.put("/:cid/products/:pid", async (req, res) => {          // DANGER: the endpoint is very similar to "/:cid/product/:pid" and can be confused
+    let {cid,pid} = req.params;
+    // cid and pid validations as ObjectId
+    if(!isValidObjectId(cid) || !isValidObjectId(pid)){
+      return res.status(500).json({ error: `cart and products id must be valid MongoDB _ids` });
+    }
+    // product validation
+    let exists;  
+    try {
+      exists = await productManager.getProductsBy({ _id:pid });
+    } catch (error) {
+        res.setHeader('Content-Type','application/json');
+    return res.status(500).json(
+      {
+        error:`Unexpected server error - Try again later or contact admninistrator`,
+        detail:`${error.message}`
+      }
+    )
+  }           
+  if (!exists){
+    res.setHeader('Content-Type','application/json');
+    return res.status(400).json({error:`There is no Product with id: ${pid}`})
+  }             
+  //cart validation
+  let cartExists;
+  cartExists = await cartManager.getCartBy({_id:cid})
+  if (!cartExists){
+    res.setHeader('Content-Type','application/json');
+    return res.status(404).json({error:`There is no cart with id: ${cid}`})
+  }    
+  // Validate qty
+  let newQty = req.body.qty;
+  if (!typeof(Number(newQty.qty))){
+    console.log(typeof(Number(newQty.qty)));
+    return res.status(500).json({ error: `qty must be a number`});
+  }
+  console.log(req.body.qty);
+// Update qty
+try {
+  let cart = await cartManager.getCartBy({_id:cid})
+  console.log(cart.products);
+  console.log(pid);
+  let updatedProducts = cart.products.find(product => product.id === pid);
+  updatedProducts.qty = newQty;
+  console.log(updatedProducts);
+  console.log(typeof(pid));
+  const newCart = await cartManager.updateProductsInCart(cid, updatedProducts);  // ** REVISAR - NO ACTUALIZA LA BASE DE DATOS
+  return res.json({ payload: `${newCart}` });     
+} catch (error) {
+  res.setHeader('Content-Type','application/json');
+  return res.status(500).json(
+    {
+      error:`Unexpected server error - Try again later or contact admninistrator`,
+      detail:`${error.message}`
+    }
+  )
+}
+});
 
 
 // Delete products in cart

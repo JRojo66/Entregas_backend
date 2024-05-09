@@ -80,12 +80,17 @@ export class CartManagerMONGO {
 // Upadate products in cart
 async updateProductsInCart(cid, updatedProducts){
   try {
-    await cartModel.findByIdAndUpdate(cid, { $set: {products: updatedProducts } }, { new: true })                                   // ** Revisar - Cambia la esturctura. Crea un Objeto con un array
+    await cartModel.findByIdAndUpdate(cid, updatedProducts, { new: true })                                  
     return `Cart ${cid} updated with ${JSON.stringify(updatedProducts)}`    
   } catch (error) {
     return error;
   }
 }
+
+// Update qty in cart
+
+
+
 
   // Delete product in cart
   async deleteProducts(cid, pid){
