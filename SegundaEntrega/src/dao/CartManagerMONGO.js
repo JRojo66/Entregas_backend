@@ -28,7 +28,7 @@ export class CartManagerMONGO {
   }
   // get cart with filter
   getCartBy = async (filter) => {
-    return await cartModel.findOne(filter).populate('products.product').lean();
+    return await cartModel.findOne().populate("products.id").lean()
   }
 
 
