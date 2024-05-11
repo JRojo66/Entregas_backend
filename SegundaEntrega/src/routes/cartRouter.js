@@ -19,7 +19,7 @@ async function loadCartAndProducts() {
 }
 loadCartAndProducts();
 
-// get cart
+// get all carts
 router.get("/", async(req, res) => {
   try {
     let cart=await cartManager.getCart()
@@ -42,6 +42,7 @@ router.get("/", async(req, res) => {
   }
 });
 
+// get cart by id
 router.get("/:cid", async (req, res) => { 
   let cid = req.params.cid;
   if (!isValidObjectId(cid)) {

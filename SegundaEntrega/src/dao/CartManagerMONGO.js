@@ -22,25 +22,15 @@ export class CartManagerMONGO {
   // Data Base management
 
   // Read from Data Base
-  
+  // get all carts  
   async getCart(){
     return await cartModel.find().lean();
   }
-
-  // Read by Id
-  // getCartById = async (cid) => {
-  //   const cart = await cartModel.find({_id:cid})
-  //   console.log("cart in cartmanager", cart);
-  //   if (cart) {
-  //     return cart;
-  //   } else {
-  //     return `cart id ${cid} not found...!`;
-  //   }
-  // };
-
+  // get cart with filter
   getCartBy = async (filter) => {
-    return await cartModel.findOne(filter).populate(products.products)
+    return await cartModel.findOne(filter).populate('products.product').lean();
   }
+
 
   // CRUD - Create, Read, Update, Delete
 
