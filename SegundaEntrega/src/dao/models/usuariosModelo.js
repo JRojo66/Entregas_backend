@@ -1,25 +1,25 @@
 import mongoose from "mongoose"
 
-const usuariosCollection="usuarios"
-const usuariosEsquema=new mongoose.Schema(
+const usersCollection="users"
+const usersSchema=new mongoose.Schema(
     {
-        nombre: {type:String, required: true},
-        apellido: String, 
+        name: String, 
+        lastName: String, 
         email: {
             type: String,
             unique: true, 
             required: true
         },
+        age: Number,
         password: String
     },
     {
         timestamps: true, 
-        // collection: "alumnos"
     }
 )
 
 export const usuarioModelo=mongoose.model(
-    usuariosCollection,
-    usuariosEsquema
+    usersCollection,
+    usersSchema
 )
 
