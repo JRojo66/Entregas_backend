@@ -2,6 +2,8 @@ import {Router} from 'express';
 import {ProductManagerMONGO as ProductManager} from "../dao/ProductManagerMONGO.js";
 import { dirname, join } from "path";
 import __dirname from "../utils.js";
+import {auth} from "../middleware/auth.js"
+
 
 export const router=Router();
 
@@ -14,6 +16,13 @@ async function loadProducts() {
   }
   loadProducts();
 
+  // Home menu
+  router.get('/', async (req, res) => {
+      res.setHeader('Content-Type', 'text/html');
+      res.status(200).render('index', {});
+  });
+
+  // Products view
   router.get('/products', async (req, res) => {
     try {
         let products = await productManager.getProducts();
@@ -25,11 +34,7 @@ async function loadProducts() {
     }
 });
 
-router.get('/', async (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('index', {});
-});
-
+// Realtime products view
 router.get('/realtimeproducts', async (req, res) => {
     let rtproducts
     try {
@@ -48,4 +53,22 @@ router.get('/realtimeproducts', async (req, res) => {
     }
 });
 
+// Register users view
+router.get('/register', async (req, res) => {
+    res.status(200).render('register')
+})
+
+// Users Login view
+router.get('/login', async (req, res) => {
+    res.status(200).render('login')
+})
+
+// 
+router.get('/profile',auth, async (req, res) => {
+    res.status(200).render('profile',{user: req.session.user})
+    
+})
+
+
+// Export
 export default router;

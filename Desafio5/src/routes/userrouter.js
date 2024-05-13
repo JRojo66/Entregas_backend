@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { UsuariosManagerMONGO as UsuariosManager } from "../dao/UsuariosManagerMONGO.js";
+import { UserManagerMONGO as UserManager } from "../dao/UserManagerMONGO.js";
 export const router=Router()
 
-const usuariosManager=new UsuariosManager()
+const usuariosManager=new UserManager()
 
 router.get('/',async(req,res)=>{
 
     try {
-        let usuarios=await usuariosManager.getUsuarios()
+        let users=await usuariosManager.getUser()
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({usuarios});        
     } catch (error) {
@@ -35,7 +35,7 @@ router.post('/',async(req, res)=>{
     // let existe=usuarios.find(u=>u.email===email) 
     let existe
     try {
-        existe =await usuariosManager.getUsuarioBy({email})
+        existe =await usuariosManager.getUserBy({email})
     } catch (error) {
         res.setHeader('Content-Type','application/json');
         return res.status(500).json(

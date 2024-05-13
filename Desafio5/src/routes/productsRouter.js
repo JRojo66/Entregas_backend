@@ -4,7 +4,7 @@ import { join } from "path";
 import {ProductManagerMONGO as ProductManager} from "../dao/ProductManagerMONGO.js";
 //import {ProductManagerMEMORY as ProductManager} from "../dao/ProductManagerMEMORY.js";
 import { io } from "../app.js";
-import {validation} from "../validation.js";
+import {validationProducts} from "../validation.js";
 import { productsModel } from "../dao/models/productsModel.js";
 import { isValidObjectId } from "mongoose";
 export const router = Router();
@@ -130,7 +130,7 @@ router.post("/", async (req, res) => {
   let { title, description, code, price, status, stock, category, thumbnails } =
     req.body;
 
-  const errors = validation(
+  const errors = validationProducts(
     title,
     description,
     code,
