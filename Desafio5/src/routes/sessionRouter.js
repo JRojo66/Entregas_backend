@@ -7,6 +7,12 @@ export const router = Router();
 
 const userManager = new UserManager();
 
+//Route /
+router.get("/", (req, res)=>{
+  res.redirect("http://localhost:8080/")
+})
+
+
 // Route register
 router.post("/register", async (req, res) => {
   // Retrieve data from body
@@ -59,13 +65,25 @@ router.post("/register", async (req, res) => {
 // Route Login
 router.post("/login", async (req, res) => {
   // Retrieve data from body
-  let { email, password } = req.body;
+
+  let { email, password, web} = req.body;
+
+  if(req.session.user){
+    if(web){
+      return res.redirect(`/login?error=You are already logged in...!!!`)
+    }
+  }
+
   // Validate datatype and empties
   const errors = validationLogin(email, password);
-  if (errors.length > 0) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({ errors });
-  }
+  if (errors.length > 0){
+    if(web){
+      return res.redirect(`/login?error=Invalid mail and/or password`)
+    }else{
+      res.setHeader("Content-Type", "application/json");
+      return res.status(400).json({ errors });
+    }
+    }
   // Validate existence
   let user;
   try {
@@ -77,16 +95,40 @@ router.post("/login", async (req, res) => {
       detail: `${error.message}`,
     });
   }
-
   if (!user) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({ error: `Invald credentials` });
+    if(web){
+      return res.redirect(`/login?error=Invalid Credentials`)
+    } else{
+      res.setHeader('Content-Type','application/json');
+      return res.status(400).json({error:`Invalid Credentials`})
+    }
   }
-  user = {...user}
+  user = { ...user };
   delete user.password;
   req.session.user = user;
-
-  res.setHeader('Content-Type','application/json');
-  return res.status(200).json({payload:"Successful login", user});
-  
+  if(web){
+    res.redirect("/products")
+  } else{
+  res.setHeader("Content-Type", "application/json");
+  return res.status(200).json({ payload: "Successful login", user });
+  }
 });
+
+// Route logout
+router.get("/logout", (req, res)=>{
+  req.session.destroy(e=>{
+      if(e){
+          console.log(error);
+          res.setHeader('Content-Type','application/json');
+          return res.status(500).json(
+              {
+                  error:`Unexpected server error - Try again later or contact admninistrator`,
+                  detalle:`${error.message}`
+              }
+          )
+          
+      }
+  })
+  res.setHeader('Content-Type','application/json');
+  return res.status(200).json({payload:"Successful Logout...!!!"});
+})

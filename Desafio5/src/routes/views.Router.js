@@ -19,7 +19,7 @@ async function loadProducts() {
   // Home menu
   router.get('/', async (req, res) => {
       res.setHeader('Content-Type', 'text/html');
-      res.status(200).render('index', {});
+      res.status(200).render('index', {});                                                      //  cvsdgf
   });
 
   // Products view
@@ -27,7 +27,7 @@ async function loadProducts() {
     try {
         let products = await productManager.getProducts();
         res.setHeader('Content-Type', 'text/html');
-        res.status(200).render('home', { products });
+        res.status(200).render('products', { products });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Error fetching products');
@@ -60,12 +60,31 @@ router.get('/register', async (req, res) => {
 
 // Users Login view
 router.get('/login', async (req, res) => {
-    res.status(200).render('login')
+    let {error} = req.query
+    res.status(200).render('login',{error})
 })
 
-// 
+// Users profile view
 router.get('/profile',auth, async (req, res) => {
-    res.status(200).render('profile',{user: req.session.user})
+        res.status(200).render('profile',{user: req.session.user})
+})
+
+// Logout view
+router.get('/logout', async (req, res) => {
+    req.session.destroy(e=>{
+        if(e){
+            console.log(error);
+            res.setHeader('Content-Type','application/json');
+            return res.status(500).json(
+                {
+                    error:`Unexpected server error - Try again later or contact admninistrator`,
+                    detalle:`${error.message}`
+                }
+            )
+            
+        }
+    })
+    res.status(200).render('logout')
     
 })
 
