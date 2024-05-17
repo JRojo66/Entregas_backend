@@ -24,6 +24,10 @@ export class ProductManagerMONGO {
   async getProducts(){
     return await productsModel.find().lean();
   }
+
+    async getProductsPaginate(query, limit, page, sort){
+    return await productsModel.paginate(query, {limit, page, sort, lean: true})
+  }
   
   // Read by Id from Database
   // getProductById = async (id) => {

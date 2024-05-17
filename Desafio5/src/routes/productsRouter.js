@@ -83,7 +83,7 @@ router.get('/',async(req,res)=>{
   }
 
   // Query
-  pquery = await productsModel.paginate(query, {limit, page, sort, lean: true})
+  pquery = await productManager.getProductsPaginate(query, limit, page, sort)
 
   // Links to prevPage y nextPage
 if(!pquery.hasPrevPage){

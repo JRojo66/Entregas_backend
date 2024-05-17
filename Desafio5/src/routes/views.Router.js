@@ -19,13 +19,20 @@ async function loadProducts() {
   // Home menu
   router.get('/', async (req, res) => {
       res.setHeader('Content-Type', 'text/html');
-      res.status(200).render('index', {});                                                      //  cvsdgf
+      res.status(200).render('index', {});                                                      
   });
 
   // Products view
   router.get('/products', async (req, res) => {
     try {
-        let products = await productManager.getProducts();
+        let query = {};
+        let page = 1;           // page by default
+        let limit = 3;          // limit by default
+        let sort = {price:-1}   // sort by default    
+        if(req.query.page){
+            page=req.query.page;
+        }     
+        let products = await productManager.getProductsPaginate(query, limit, page, sort);
         res.setHeader('Content-Type', 'text/html');
         res.status(200).render('products', { products });
     } catch (error) {
