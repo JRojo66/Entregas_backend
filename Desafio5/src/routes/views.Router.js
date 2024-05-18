@@ -31,10 +31,11 @@ async function loadProducts() {
         let sort = {price:-1}   // sort by default    
         if(req.query.page){
             page=req.query.page;
-        }     
+        }
+        let user=req.session.user;
         let products = await productManager.getProductsPaginate(query, limit, page, sort);
         res.setHeader('Content-Type', 'text/html');
-        res.status(200).render('products', { products });
+        res.status(200).render('products', { products, user });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Error fetching products');

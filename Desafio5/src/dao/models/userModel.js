@@ -11,7 +11,11 @@ const usersSchema=new mongoose.Schema(
             required: true
         },
         age: Number,
-        password: String
+        password: String,
+        role: {
+            type: String,
+            default: "user"
+          }
     },
     {
         timestamps: true, 
