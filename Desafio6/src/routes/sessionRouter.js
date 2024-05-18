@@ -64,19 +64,6 @@ router.post("/register", async (req, res) => {
 
 // Route Login
 router.post("/login", async (req, res) => {
-
-  req.session.destroy(e=>{
-    if(e){
-        console.log(error);
-        res.setHeader('Content-Type','application/json');
-        return res.status(500).json(
-            {
-                error:`Unexpected server error - Try again later or contact admninistrator`,
-                detalle:`${error.message}`
-            }
-        )
-        
-    }
   // Retrieve data from body
 
   let { email, password, web} = req.body;
