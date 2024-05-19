@@ -11,6 +11,8 @@ import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js";
 import { router as userRouter } from "./routes/userrouter.js";
 import { router as sessionRouter } from "./routes/sessionRouter.js";
+import passport from "passport";
+import { initPassport } from "./config/passport.config.js";
 
 const PORT = 8080;
 const app = express();
@@ -35,6 +37,10 @@ app.use(
     })
   })
 );
+
+initPassport()
+app.use(passport.initialize());
+app.use(passport.session())
 
 app.use("/", viewsRouter);
 
