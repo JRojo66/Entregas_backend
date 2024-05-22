@@ -61,7 +61,7 @@ router.get("/:cid", async (req, res) => {
 });
 
 // add new cart
-router.post("/", async (req, res) => {    
+router.post("/", async (req, res) => {
   try{
   let firstCart = await cartManager.addCart();  
   return res.json(firstCart);

@@ -3,8 +3,10 @@ import local from "passport-local";
 import github from "passport-github2";
 import { UserManagerMONGO as UserManager } from "../dao/UserManagerMONGO.js";
 import { generateHash, isValidPassword } from "../utils.js";
+import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 
 const userManager = new UserManager();
+const cartManager = new CartManager();
 
 export const initPassport = () => {
   passport.use(
@@ -24,14 +26,16 @@ export const initPassport = () => {
           }
           password = generateHash(password);
           // Add User
+          let newCart = await cartManager.addCart()
           let newUser = await userManager.create({
             name,
             lastName,
             email: username,
             age,
             password,
+            cart: newCart._id,
           });
-          delete newUser.password;
+         delete newUser.password;
           return done(null, newUser);
         } catch (error) {
           return done(error);

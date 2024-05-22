@@ -36,9 +36,9 @@ export class CartManagerMONGO {
 
 // Create cart
   addCart = async () => {
-    const newCart = {products: []}
-    await cartModel.create(newCart);
-    return `New Cart created - Cart is empty`;
+    const cartProducts = {products: []}
+    let newCart = await cartModel.create(cartProducts);
+    return newCart.toJSON();
   }
 
   // Create/add product in cart
