@@ -72,6 +72,14 @@ router.get('/login', async (req, res) => {
     res.status(200).render('login',{error})
 })
 
+// Users Login view
+router.get('/login/github', async (req, res) => {
+    let {error} = req.query
+    res.status(200).render('loginGitHub',{error})
+})
+
+
+
 // Users profile view
 router.get('/profile',auth, async (req, res) => {
         res.status(200).render('profile',{user: req.session.user})

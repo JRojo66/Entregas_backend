@@ -1,6 +1,7 @@
 import passport from "passport";
 import local from "passport-local";
-import { UserManagerMONGO as UserManager} from "../dao/UserManagerMONGO.js";
+import github from "passport-github2";
+import { UserManagerMONGO as UserManager } from "../dao/UserManagerMONGO.js";
 import { generateHash, isValidPassword } from "../utils.js";
 
 const userManager = new UserManager();
@@ -17,11 +18,11 @@ export const initPassport = () => {
         try {
           let { name, lastName, age } = req.body;
           // Validate existence
-          let exists = await userManager.getBy({ email: username });          
+          let exists = await userManager.getBy({ email: username });
           if (exists) {
             return done(null, false);
           }
-          password = generateHash(password);          
+          password = generateHash(password);
           // Add User
           let newUser = await userManager.create({
             name,
@@ -42,34 +43,59 @@ export const initPassport = () => {
   passport.use(
     "login",
     new local.Strategy(
-        {
-            usernameField: "email",
-        },
-        async(username, password, done) => {
-            try {
-                // Validate existence
-                let user = await userManager.getBy({email: username});
-                if (!user) {
-                    return done(null, false);                                                                                 
-                }
-                // Validate password
-                if(!isValidPassword(password, user.password)){                    
-                    return done(null, false)
-                }
-                return done(null, user);
-            } catch (error) {
-                return done(error); 
-              }
+      {
+        usernameField: "email",
+      },
+      async (username, password, done) => {
+        try {
+          // Validate existence
+          let user = await userManager.getBy({ email: username });
+          if (!user) {
+            return done(null, false);
+          }
+          // Validate password
+          if (!isValidPassword(password, user.password)) {
+            return done(null, false);
+          }
+          return done(null, user);
+        } catch (error) {
+          return done(error);
         }
+      }
+    )
+  );
+
+  passport.use(
+    "github",
+    new github.Strategy(
+        {
+            clientID: "Iv23lilw42OZu4xXKicA",
+            clientSecret: "22bca2a20c3dda4b5b5b9ca2d19ac00275eb297b",
+            callbackURL: "http://localhost:8080/api/sessions/callBackGithub"
+        },
+        async(accessToken, refreshToken, profile, done)=>{
+            try {
+                let name = profile._json.name;
+                let email = profile._json.email;
+                let user = await userManager.getBy({email});
+                if(!user){
+                   user = await userManager.create({name, email, profile})
+                }
+                    return done(null, user)
+            } catch (error) {
+               return done(error)
+            }
+        }
+
     )
   )
+
 };
 
-passport.serializeUser((user, done)=>{
-    return done(null, user._id); 
-})
-passport.deserializeUser(async (id, done)=>{
-    let user=await userManager.getBy({_id:id})
-    return done(null, user)
-})
-
+passport.serializeUser((user, done) => {
+  return done(null, user._id);
+});
+passport.deserializeUser(async (id, done) => {
+  let user = await userManager.getBy({ _id: id });
+  return done(null, user);
+});
