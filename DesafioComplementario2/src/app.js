@@ -4,7 +4,7 @@ import { engine } from "express-handlebars";
 import sessions from "express-session";
 import MongoStore from "connect-mongo";
 import { Server } from "socket.io";
-import __dirname from "./utils.js";
+import {__dirname} from "./utils.js";
 import { join } from "path";
 import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";

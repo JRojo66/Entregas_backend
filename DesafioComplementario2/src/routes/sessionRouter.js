@@ -42,7 +42,7 @@ router.post(
 );
 
 router.post(
-  "/loginjwt",
+  "/loginJWT",
   async (req,res)=>{
     let {email, password}=req.body
     if(!email || !password) return res.status(400).send('Enter email and password')
@@ -79,7 +79,7 @@ router.get('/login/github',passport.authenticate("github",{}),(req,res)=>{
       res.redirect("/profile");
     } else {
       res.setHeader("Content-Type", "application/json");
-      return res.status(200).json({ payload: "Successful Login...!!!", user });
+      return res.status(200).json({ payload: "Successful Login...!!!", user});
     }
   }
 })
@@ -102,4 +102,22 @@ router.get("/logout", (req, res) => {
   });
   res.setHeader("Content-Type", "application/json");
   return res.status(200).json({ payload: "Successful Logout...!!!" });
+});
+
+// Route get user logged in sessions and JWT
+router.get("/current", (req, res) => {
+  let userSessions = req.session.user;
+  if(!userSessions){
+    userSessions="No sessions users logged"
+  }  
+    let token = req.cookies["codercookie"];
+    console.log(token);
+    try {
+      let userJWT = jwt.verify(token,SECRET)
+      res.setHeader("Content-Type", "application/json");
+      return res.status(200).json({userSessions, userJWT});      
+    } catch (error) {
+      res.setHeader('Content-Type','application/json');
+      return res.status(401).json({userJWT:`${error}`, userSessions})
+    }
 });

@@ -2,7 +2,7 @@ import {Router} from 'express';
 import {ProductManagerMONGO as ProductManager} from "../dao/ProductManagerMONGO.js";
 import { CartManagerMONGO as CartManager } from '../dao/CartManagerMONGO.js';
 import { dirname, join } from "path";
-import __dirname from "../utils.js";
+import {__dirname} from "../utils.js";
 import {auth} from "../middleware/auth.js"
 
 

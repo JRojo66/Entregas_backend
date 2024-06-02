@@ -14,7 +14,7 @@ btnSubmit.addEventListener("click", async (e) => {
         password: inputPassword.value.trim()
     }
 
-    let payload = await fetch("/api/sessions/loginjwt", {
+    let payload = await fetch("/api/sessions/loginJWT", {
         method: "post",
         headers: {
             "Content-Type": "application/json"

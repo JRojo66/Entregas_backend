@@ -1,5 +1,5 @@
 import { Router } from "express";
-import __dirname from "../utils.js";
+import {__dirname, authMode} from "../utils.js";
 import { join } from "path";
 import {ProductManagerMONGO as ProductManager} from "../dao/ProductManagerMONGO.js";
 //import {ProductManagerMEMORY as ProductManager} from "../dao/ProductManagerMEMORY.js";
@@ -9,6 +9,7 @@ import { productsModel } from "../dao/models/productsModel.js";
 import { isValidObjectId } from "mongoose";
 export const router = Router();
 import { authjwt } from "../middleware/auth.js";                             // Borrar
+import passport from "passport";
 
 
 // Instanciates
@@ -108,7 +109,7 @@ if(!pquery.hasNextPage){
 
 
 // Request with Param id
-router.get("/:id",authjwt, async(req, res) => {                               //Borrar authjwt
+router.get("/:id",passport.authenticate("current", {session: false}), async(req, res) => {                               //Borrar authjwt
   let id = req.params.id;
   id = Number(id);
   if (isNaN(id)) {

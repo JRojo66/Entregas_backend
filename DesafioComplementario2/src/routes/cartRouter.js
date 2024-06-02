@@ -1,5 +1,5 @@
 import { Router } from "express";
-import __dirname from "../utils.js";
+import {__dirname} from "../utils.js";
 import { join } from "path";
 import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
