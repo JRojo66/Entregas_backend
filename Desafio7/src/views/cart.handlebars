@@ -1,0 +1,23 @@
+<h1>Cart</h1>
+<h3>{{user.name}}'s cart. Cart id: {{cart._id}}</h3>
+
+<hr>
+{{#each cart.products}}
+    <div class="container">
+        <div class="row">
+            <div class="col mx-1">
+                <div class="card" style="width: 75vw;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{product.title}}</h5>
+                        <img src="{{product.thumbnails.[0]}}" alt={{title}}>
+                        <p class="card-text">{{product.description}}</p>
+                        <p class="card-text"><strong>$ {{product.price}}</strong></p>
+                        <p class="card-text"><strong>qty: {{qty}}</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/each}}
+
+<a href="/products">Add products</a> 

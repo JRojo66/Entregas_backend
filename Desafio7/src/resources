@@ -1,0 +1,30 @@
+// mail admiin: adminCoder@coder.com
+// clave admin: adminCod3r123 
+
+// conexion a mongoDb: "mongodb+srv://backendCoderJRb:backend123@jr.rdtaukg.mongodb.net/?retryWrites=true&w=majority&appName=JR"
+// conexion a mongoDb: "mongodb+srv://backendCoderJRb:backend123@jr.rdtaukg.mongodb.net/?retryWrites=true&w=majority&appName=JR&dBname=ecommerce", // con nombre de la base de datos
+
+// Github para login: URL Callback http://localhost:8080/api/sessions/callBackGithub
+// Client ID: Iv23lilw42OZu4xXKicA
+// secret: 22bca2a20c3dda4b5b5b9ca2d19ac00275eb297b 
+
+
+import {Command, Option} from "commander"
+
+let programa=new Command()
+
+programa.option("-p, --puertoConn <puerto>", "Puerto de conexión del server", 3000)
+programa.option("-r, --ruta <ruta archivo>", "Ruta archivo de datos")
+programa.option("-d, --debug", "Activa el modo debug")
+programa.option("-c, --colores [colores...]", "Recibe array de colores")
+programa.requiredOption("-u, --usuario <usuario>", "Usuario que corre el script")
+programa.addOption(new Option("-m, --mode <modo>", "Mode de ejecución del script").choices(["dev", "prod", "test"]).default("dev"))
+// programa.option("-p, --password <password>", "Clave de acceso")
+
+programa.allowUnknownOption()
+programa.parse()
+const argumentos=programa.opts()
+console.log(argumentos)
+const port=argumentos.puertoConn
+console.log(port)
+console.log(programa.args)
