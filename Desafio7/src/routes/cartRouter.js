@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {__dirname} from "../utils.js";
+import { __dirname } from "../utils.js";
 import { join } from "path";
 import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
@@ -14,17 +14,17 @@ let productManager = new ProductManager(
   join(__dirname, "data", "products.json")
 );
 
-// Loads cart
-async function loadCartAndProducts() {
-  await cartManager.init();
-  await productManager.init();
-}
-loadCartAndProducts();
+// Loads cart                                    // Para la persistencia en FS
+// async function loadCartAndProducts() {
+//   await cartManager.init();
+//   await productManager.init();
+// }
+// loadCartAndProducts();
 
 // get all carts
 router.get("/", async (req, res) => {
   try {
-    let cart = await cartManager.getCart();
+    let cart = await cartManager.getAll();
     if (req.query.limit) {
       // Check if 'limit' exists in the request query
       const limit = Number(req.query.limit);
@@ -50,7 +50,7 @@ router.get("/:cid", async (req, res) => {
     return res.json({ error: "Pls, enter a valid id..." });
   }
   try {
-    let cart = await cartManager.getCartBy({ _id: cid });
+    let cart = await cartManager.getBy({ _id: cid });
     if (!cart) {
       return res.json({ message: `cart id ${cid} not found` });
     } else {
@@ -61,17 +61,7 @@ router.get("/:cid", async (req, res) => {
   }
 });
 
-// add new cart
-router.post("/", async (req, res) => {
-  try {
-    let firstCart = await cartManager.addCart();
-    return res.json(firstCart);
-  } catch {
-    return res.json({ error: "Cannot create new cart" });
-  }
-});
-
-// Update Products
+// Update Products in cart
 
 router.post("/:cid/product/:pid", async (req, res) => {
   let { cid, pid } = req.params;
@@ -104,7 +94,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
   if (result.modifiedCount > 0) {
     res.setHeader("Content-Type", "application/json");
-    return res.status(200).json({ payload: "Cart updated" });
+    return res.status(200).json("Cart updated");
   } else {
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
@@ -125,7 +115,7 @@ router.put("/:cid", async (req, res) => {
   }
   // cart validation
   let cartExists;
-  cartExists = await cartManager.getCartBy({ _id: cid });
+  cartExists = await cartManager.getBy({ _id: cid });
   if (!cartExists) {
     res.setHeader("Content-Type", "application/json");
     return res.status(404).json({ error: `There is no cart with id: ${cid}` });
@@ -133,12 +123,13 @@ router.put("/:cid", async (req, res) => {
   // Cart update
   let newProducts = req.body;
   const newCart = await cartManager.updateProductsInCart(cid, newProducts);
-  return res.json({ payload: `${newCart}` });
+  res.setHeader("Content-Type", "application/json");
+  return res.status(200).json(`Cart ${cid} updated`);
 });
 
 // Update qty in a product in cart
 router.put("/:cid/products/:pid", async (req, res) => {
-  // DANGER: the endpoint is very similar to "/:cid/product/:pid" and can be confused
+  // WARNING: the endpoint is very similar to "/:cid/product/:pid" and can be confused
   let { cid, pid } = req.params;
   // cid and pid validations as ObjectId
   if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
@@ -165,7 +156,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
   }
   //cart validation
   let cartExists;
-  cartExists = await cartManager.getCartBy({ _id: cid });
+  cartExists = await cartManager.getBy({ _id: cid });
   if (!cartExists) {
     res.setHeader("Content-Type", "application/json");
     return res.status(404).json({ error: `There is no cart with id: ${cid}` });
@@ -177,15 +168,16 @@ router.put("/:cid/products/:pid", async (req, res) => {
   }
   // Update qty
   try {
-    let cart = await cartManager.getCartBy({ _id: cid }); // Seguir aca. No esta actualizando la cantidad en el carrito
-    cart.products.forEach((product) => {
-      if (product.id === pid) {
-        product.qty = newQty;
+    let cart = await cartManager.getOneBy({ _id: cid });
+    cart.products.forEach((element) => {
+      if (element.product == pid) {
+        element.qty = newQty;
       }
     });
     let newProducts = { products: cart.products };
     const newCart = await cartManager.updateProductsInCart(cid, newProducts);
-    return res.json({ payload: `${newCart}` });
+    console.log(newProducts.products);
+    return res.json(`Updated cart: ${pid} with qty: ${newQty}`);
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
@@ -195,7 +187,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
   }
 });
 
-// Delete products in cart
+// Delete product in cart                                                                         // Ver porque postman no encuentra el producto...
 router.delete("/:cid/product/:pid", async (req, res) => {
   let { cid, pid } = req.params; // create a validation function
   // cid and pid validations as ObjetcId
@@ -224,7 +216,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
   // cart validation
   let cartExists;
   try {
-    cartExists = await cartManager.getCartBy({ _id: cid });
+    cartExists = await cartManager.getOneBy({ _id: cid });
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
@@ -237,11 +229,8 @@ router.delete("/:cid/product/:pid", async (req, res) => {
     return res.status(404).json({ error: `There is no cart with id: ${cid}` });
   }
   // product validation in cart
-  let existsInCart;
-  existsInCart = cartExists.products.some(
-    (product) => typeof product.id === "string" && product.id === pid
-  );
-  if (!existsInCart) {
+  let productIndex = cartExists.products.findIndex((p) => p.product == pid);
+  if (productIndex === -1) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(404)
@@ -250,7 +239,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
   // Delete product in cart
   try {
     let cartUpdated = await cartManager.deleteProducts(cid, pid);
-    res.json({ payload: `${cartUpdated}` });
+    res.json(`${pid} deleted from cart: ${cid}`);
   } catch (error) {
     return res.json({
       error: `Unexpected server error - Try again later or contact admninistrator`,
@@ -269,11 +258,10 @@ router.delete("/:cid", async (req, res) => {
       .status(400)
       .json({ error: `cart id must be valid Mongo ObjectId` });
   }
-  // cart validation
-
+  // cart existence validation
   let cartExists;
   try {
-    cartExists = await cartManager.getCartBy({ _id: cid });
+    cartExists = await cartManager.getBy({ _id: cid });
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
@@ -285,7 +273,8 @@ router.delete("/:cid", async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     return res.status(404).json({ error: `There is no cart with id: ${cid}` });
   }
-
+  let newProducts = { products: [] };
+  const newCart = await cartManager.updateProductsInCart(cid, newProducts);
   res.setHeader("Content-Type", "application/json");
-  return res.status(200).json({ payload: "OK" });
+  return res.json(`Products in cart ${cid} were deleted`);
 });

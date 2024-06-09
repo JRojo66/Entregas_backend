@@ -81,5 +81,3 @@ const connDB = async () => {
   }
 };
 connDB();
-
-

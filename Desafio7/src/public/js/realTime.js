@@ -7,7 +7,7 @@ socket.on("newProduct", (newproduct) => {
     ulproductsRealTime.innerHTML+=`<li>${newproduct}</li>`
 });
 
-socket.on("deletedProduct", products =>{
+socket.on("deletedProduct", products =>{               // deletedProduct or deleteProducts? CHECK
     ulproductsRealTime.innerHTML=""
     products.forEach(element => {
         ulproductsRealTime.innerHTML+=`<li>${element.title}</li>`

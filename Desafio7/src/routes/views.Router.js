@@ -14,11 +14,11 @@ let productManager = new ProductManager(
   );
   const cartManager=new CartManager()
 
-  // Loads Products
-async function loadProducts() {
-    await productManager.init();
-  }
-  loadProducts();
+  // Loads Products                                                                     // Borrar o queda para la persistencia en FS?
+// async function loadProducts() {
+//     await productManager.init();
+//   }
+//   loadProducts();
 
   //Home menu
   router.get('/', async (req, res) => {
@@ -44,7 +44,7 @@ router.get('/createProduct', async (req, res) => {
             page=req.query.page;
         }
         let user=req.session.user;
-        let products = await productManager.getProductsPaginate(query, limit, page, sort);
+        let products = await productManager.getPaginated(query, limit, page, sort);
         let cartId = user.cart                                                                        // Borrar
         res.setHeader('Content-Type', 'text/html');
         res.status(200).render('products', {products, user, cartId});
@@ -58,7 +58,7 @@ router.get('/createProduct', async (req, res) => {
 router.get('/realtimeproducts', async (req, res) => {
     let rtproducts
     try {
-        rtproducts= await productManager.getProducts();
+        rtproducts= await productManager.get();
         res.setHeader('Content-Type', 'text/html');
         res.status(200).render('realtime', {rtproducts});
     } catch (error) {
@@ -77,7 +77,7 @@ router.get('/realtimeproducts', async (req, res) => {
 router.get("/cart/:cid", async(req, res)=>{
     let {cid}=req.params
     let user=req.session.user;
-    let cart=await cartManager.getCartBy({_id:cid})
+    let cart=await cartManager.getBy({_id:cid})
     res.setHeader('Content-Type','text/html');
     return res.status(200).render("cart", {cart, user});
 })

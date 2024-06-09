@@ -17,11 +17,11 @@ let productManager = new ProductManager(
    join(__dirname, "data", "products.json")
 );
 
-// Loads Products
-async function loadProducts() {
-  await productManager.init();
-}
-loadProducts();
+// // Loads Products
+// async function loadProducts() {   // Para la persistencia en FS?
+//   await productManager.init();
+// }
+// loadProducts();
 
 // get Products
 router.get('/',async(req,res)=>{
@@ -85,7 +85,7 @@ router.get('/',async(req,res)=>{
   }
 
   // Query
-  pquery = await productManager.getProductsPaginate(query, limit, page, sort)
+  pquery = await productManager.getPaginated(query, limit, page, sort)
 
   // Links to prevPage y nextPage
 if(!pquery.hasPrevPage){
@@ -116,7 +116,7 @@ router.get("/:id",passport.authenticate("current", {session: false}), async(req,
     return res.json({ error: "Pls, enter a numeric id..." });
   }
   try {
-    let product = await productManager.getProductsBy({id:id}); 
+    let product = await productManager.getBy({id:id}); 
     if (!product) {
       return res.json({ message: `id ${id} not found` });
     } else {
@@ -150,7 +150,7 @@ router.post("/", async (req, res) => {
 
   let exists;
   try {
-    exists = await productManager.getProductsBy({ code });
+    exists = await productManager.getBy({ code });
   } catch (error) {
       res.setHeader('Content-Type','application/json');
   return res.status(500).json(
@@ -166,10 +166,10 @@ router.post("/", async (req, res) => {
       .json({ error: `Product with code ${code} already exists` });
   }
   try {
-    await productManager.addProducts({ title, description, code, price, status, stock, category, thumbnails});
-    let newProduct = await productManager.getProducts();
-    req.io.emit("newProduct", title);;
-    return res.json({ payload: `Product added` });
+    let productAdded = await productManager.add({ title, description, code, price, status, stock, category, thumbnails});
+    let newProduct = await productManager.getAll();
+    req.io.emit("newProduct", title);
+    return res.json(`Product added: ${productAdded}`);
   } catch (error) {
     res.status(300).json({ error: `Unexpected server error - Try again later or contact admninistrator` });
   }
@@ -209,7 +209,7 @@ router.put("/:pid", async (req, res) => {
   }
 
   try {
-    const products = await productManager.updateProducts(pid, updatedProduct);
+    const products = await productManager.update(pid, updatedProduct);
     return res.json(products);
   } catch (error) {
     res.status(300).json({ error: `Unexpected server error - Try again later or contact admninistrator` });
@@ -226,10 +226,10 @@ router.delete("/:pid", async (req, res) => {
     });
   }
   try {
-    let products = await productManager.deleteProducts(pid);
+    let products = await productManager.delete(pid);
     if (products.deletedCount > 0) {
-      await productManager.getProducts();
-      io.emit("deleteProducts", productManager.getProducts());
+      await productManager.getAll();
+      io.emit("deleteProducts", productManager.getAll());
       return res.json({ payload: `Product ${pid} deleted` });
     } else {
       return res.status(404).json({ error: `${id} inexistent` });
