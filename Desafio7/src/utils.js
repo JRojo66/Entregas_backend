@@ -1,12 +1,10 @@
 import {fileURLToPath} from 'url';
 import { dirname, join } from 'path';
-import crypto from "crypto";
+//import crypto from "crypto";
 import bcrypt from "bcrypt";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = dirname(__filename);
-
-//export default __dirname;
 
 // System configuration
 export const SECRET="CoderCoder123";               // Sessions or JWT         TOMAR DE .ENV Y BORRAR

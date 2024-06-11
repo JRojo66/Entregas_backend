@@ -9,6 +9,12 @@ export class CartManagerMONGO {
 
   // Create: Carts are created with users
 
+  // Create cart
+  add = async () => {
+    const cartProducts = {products: []}
+    let newCart = await cartModel.create(cartProducts);
+    return newCart.toJSON();
+  }
   // Read from Data Base
 
   // get all carts
@@ -27,12 +33,12 @@ export class CartManagerMONGO {
   };
   
   // Update products in cart
-  updateProductsInCart = async (id, cart) => {
+  update = async (id, cart) => {                                                                    // Cambiar nombre
     return await cartModel.updateOne({ _id: id }, cart);
   }
 
   // Delete product in cart
-  deleteProducts = async(cid, pid) => {
+  delete = async(cid, pid) => {                                                                          // Cambiar nombre
     return await cartModel.findByIdAndUpdate(cid,{$pull: { products: { product: pid } }},{ new: true });
   }
 

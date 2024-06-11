@@ -35,7 +35,7 @@ export const initPassport = () => {
           }
           password = generateHash(password);
           // Add User
-          let newCart = await cartManager.addCart();
+          let newCart = await cartManager.add();
           let newUser = await userManager.create({
             name,
             lastName,
@@ -43,7 +43,8 @@ export const initPassport = () => {
             age,
             password,
             cart: newCart._id,
-          });
+          })
+          newUser = newUser.toJSON();
           delete newUser.password;
           return done(null, newUser);
         } catch (error) {
@@ -63,6 +64,7 @@ export const initPassport = () => {
         try {
           // Validate existence
           let user = await userManager.getBy({ email: username });
+          console.log(user);
           if (!user || !user.password) {
             return done(null, false);
           }
@@ -70,6 +72,7 @@ export const initPassport = () => {
           if (!isValidPassword(password, user.password)) {
             return done(null, false);
           }
+
           return done(null, user);
         } catch (error) {
           return done(error);

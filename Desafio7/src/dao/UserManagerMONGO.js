@@ -1,13 +1,11 @@
-import { userModel } from "./models/userModel.js"
+import { userModel } from "./models/userModel.js";
 
-export class UserManagerMONGO{
+export class UserManagerMONGO {
+  create = async (user) => {
+    return await userModel.create(user);
+  };
 
-    async create(user){
-        let newUser=await userModel.create(user)
-        return newUser.toJSON()
-    }
-
-    async getBy(filter={}){
-        return await userModel.findOne(filter).lean()
-    }
+  getBy = async (filter = {}) => {
+    return await userModel.findOne(filter).lean();
+  };
 }

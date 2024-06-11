@@ -9,7 +9,6 @@ import { join } from "path";
 import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js";
-import { router as userRouter } from "./routes/userrouter.js";
 import { router as sessionRouter } from "./routes/sessionRouter.js";
 import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
