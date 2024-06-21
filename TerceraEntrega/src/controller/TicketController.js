@@ -1,10 +1,8 @@
 import { ticketModel } from "../dao/models/ticketModel.js";
-import { productsModel } from "../dao/models/productsModel.js"; 
 import { cartService } from "../services/CartService.js";
+import { ticketService } from "../services/TicketService.js";
 import { userService } from "../services/UserService.js";
 import { productService } from "../services/ProductService.js";
-
-// **  Pasar a capas Service y DAO
 
 export class TicketController {
   static createTicket = async (req, res) => {
@@ -22,65 +20,54 @@ export class TicketController {
       }
       const userEmail = user.email;
 
-      // Get cart, check every product's stock, create an array with accepted items and an array with out of stock products
+      // Get cart, check every product's stock, create an array with available and an array with not available items
       let cart = await cartService.getCartBy({ _id: cid });
-      let ticketCart = [];
-      let ticketNotAvailable = [];
+      let available = [];
+      let notAvailable = [];
       let amount = 0;
-      let lastTicket_id = "";
-      for (let i = 0; i < cart.products.length; i++) {
-        let cartProduct = cart.products[i].product._id;
-        let product = await productService.getProductBy({ _id: cartProduct });
-        let productStock = product.stock;
-        let qty = cart.products[i].qty;
-        let price = product.price;
-        if (productStock > qty) {
-          ticketCart.push({ product: cartProduct, qty: qty });
-          amount = amount + price * qty;
+      for (let i = 0; i < cart.products.length; i++) {     // ** Remember avoid using forEach with await inside - Doesn't work properly - methods do not await and generate problems
+        let pid = cart.products[i].product._id;
+        let product = await productService.getProductBy({ _id: pid });
+        if (product.stock > cart.products[i].qty) {
+          available.push({ product: pid, qty: cart.products[i].qty });
+          amount = amount + product.price * cart.products[i].qty;
           // Discount from product stock
-          product.stock = productStock-qty;
-            await productsModel.findByIdAndUpdate(cartProduct,product , {
-              runValidators: true,
-              returnDocument: "after",
-            });                                                                                                                            // Pasar a TickeService
+          product.stock = product.stock - cart.products[i].qty;
+          await productService.updateProducts(pid, product);
         } else {
-          ticketNotAvailable.push({ product: cartProduct, qty: qty });
+          notAvailable.push({ product: pid, qty: cart.products[i].qty });
         }
       }
 
       // Validate ticket not empty
-      if (ticketCart.length > 0) {
-        // Save el ticket
-        await ticketModel.create({
-          code: code,
-          amount: amount,
+      if (available.length > 0) {
+        // Save ticket
+        let newTicket = {
+          code,
+          amount,
           purchaser: userEmail,
           cart: cid,
-          products: ticketCart,
-        });                                                                                                                           // Pasar a TicketService
+          products: available,
+        };
+        await ticketService.addTicket(newTicket);
+
         // Upodate purchase_datetime with ticket's createdAt from timestamps
-        let lastTicket = await ticketModel.findOne({ code: code });                                                                   // Pasar a TicketService
-        await ticketModel.findOneAndUpdate(
-          // Pasar a TicketService
-          { code },
-          { $set: { purchase_datetime: lastTicket.createdAt } },
-          { new: true }
-        );
+        let lastTicket = await ticketModel.findOne({ code });
+        await ticketService.update(code, lastTicket.createdAt);
+
         // Update cart with unsold not sold products
-        const updatedCart = await cartService.updateCart(cid, {
-          products: ticketNotAvailable,
-        });                                                                                                                           // Pasar a TicketService
+        await cartService.updateCart(cid, {
+          products: notAvailable,
+        });
       } else {
         return res
           .status(404)
           .json({ error: `All products are out of stock...!!!` });
       }
-      return res
-        .status(201)
-        .json({
-          message: `Ticket code: ${code} created...!!!`,
-          notAvailable: ticketNotAvailable,
-        });
+      return res.status(201).json({
+        message: `Ticket code: ${code} created...!!!`,
+        notAvailable: notAvailable,
+      });
     } catch (error) {
       return res.json({
         error:
