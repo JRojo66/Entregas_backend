@@ -51,6 +51,7 @@ app.use(passport.session());
 
 app.use("/", viewsRouter);
 
+
 app.use(
   "/api/products",
   (req, res, next) => {

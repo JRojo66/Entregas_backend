@@ -1,5 +1,6 @@
 <h1>Cart</h1>
 <h3>{{user.name}}'s cart. Cart id: {{cart._id}}</h3>
+<input type="text" value="{{cart._id}}" id="cartCheckout" hidden>    
 
 <hr>
 {{#each cart.products}}
@@ -19,5 +20,8 @@
         </div>
     </div>
 {{/each}}
-
+<button onclick="checkout('{{cart._id}}')">Checkout</button>   {{!-- checkout simil buy --}}
+<br>
 <a href="/products">Add products</a> 
+
+<script src="/js/checkout.js"></script>

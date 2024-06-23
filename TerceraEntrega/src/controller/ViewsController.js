@@ -1,5 +1,7 @@
 import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
 import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
+import jwt from "jsonwebtoken";
+import { SECRET } from "../utils.js";
 
 let productManager = new ProductManager();                                            // Pasar a capa Service
 let cartManager = new CartManager();                                                  // Pasar a capa Service
@@ -24,7 +26,8 @@ export class ViewsController {
       if (req.query.page) {
         page = req.query.page;
       }
-      let user = req.session.user;
+      let token = req.cookies["codercookie"];
+      let user = jwt.verify(token, SECRET);  // For sessions - let user = req.session.user; 
       let products = await productManager.getPaginated(
         query,
         limit,

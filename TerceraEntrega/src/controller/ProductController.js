@@ -195,7 +195,7 @@ export class ProductController {
         thumbnails,
       });
       let newProduct = await productService.getAllProducts();
-        // req.io.emit("newProduct", title);                                                                                    // Revisar productrt?
+        req.serverSocket.emit("newProduct", title);
       return res.status(201).json(`Product added: ${productAdded}`);
     } catch (error) {
       res
@@ -256,11 +256,10 @@ export class ProductController {
       });
     }
     try {
-      //let products = await productService.deleteProducts(pid);
       let product = await productService.getProductBy({_id: pid})
       if (product){               
         await productService.deleteProduct(pid);
-                //io.emit("deleteProducts", productService.getAllProducts());                                   // Revisar io
+        req.serverSocket.emit("deletedProduct", await productService.getAllProducts());
         return res.json({ payload: `Product ${pid} deleted` });
       }
       else {

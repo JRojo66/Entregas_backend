@@ -11,17 +11,17 @@ export const router = Router();
 
 const cartManager = new CartManager();
 
-router.get('/',roleMiddleware(["admin","user"]),ViewsController.home); 
+router.get('/',ViewsController.home); 
 router.get("/createProduct",roleMiddleware(["admin"]), ViewsController.createProduct);
 router.get("/products", ViewsController.products);
 router.get("/realtimeproducts", ViewsController.realTimeProducts);
-router.get("/cart/:cid", ViewsController.getCartById);
+router.get("/cart/:cid",roleMiddleware(["admin","user"]),ViewsController.getCartById);
 router.get("/register", ViewsController.register);
 router.get("/login", ViewsController.login);
 router.get("/loginJWT", ViewsController.loginJWT);
 router.get("/login/github", ViewsController.loginGitHub);
-router.get("/profile", auth, ViewsController.profile);
-router.get("/logout", ViewsController.logout);
+router.get("/profile", auth,roleMiddleware(["admin","user"]),ViewsController.profile);
+router.get("/logout",roleMiddleware(["admin","user"]), ViewsController.logout);
 router.get('/chat',roleMiddleware(["user"]),ViewsController.chat); 
 
 
