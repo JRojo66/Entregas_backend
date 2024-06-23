@@ -1,8 +1,8 @@
 import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
 import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 
-let productManager = new ProductManager();
-let cartManager = new CartManager();
+let productManager = new ProductManager();                                            // Pasar a capa Service
+let cartManager = new CartManager();                                                  // Pasar a capa Service
 
 export class ViewsController {
   static home = async (req, res) => {
@@ -76,7 +76,7 @@ export class ViewsController {
 
   static loginJWT = async (req, res) => {
     let { error } = req.query;
-    res.status(200).render("login", { error });
+    res.status(200).render("loginJWT", { error });
   }
 
 
@@ -103,4 +103,9 @@ export class ViewsController {
     });
     res.status(200).render("logout");
   }
+
+  static chat = async(req,res) => {
+    res.status(200).render("chat")
+  }
+
 }

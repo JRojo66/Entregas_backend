@@ -14,9 +14,13 @@ import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
 import { config } from './config/config.js';
+import { chatService } from "./services/chatService.js";
+
 
 const PORT = config.PORT;
 const app = express();
+let io;
+
 
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
@@ -50,21 +54,51 @@ app.use("/", viewsRouter);
 app.use(
   "/api/products",
   (req, res, next) => {
-    req.io = io;
+    req.serverSocket = io;                                                  // cambie io por serverSocket
     next();
   },
   productsRouter
 );
 
+
 app.use("/api/cart", cartRouter); // directs /api/cart to cartRouter
 app.use("/api/sessions", sessionRouter);
 
-const serverHTTP = app.listen(PORT, () =>
-  console.log(`Server on line at port ${PORT}`)
+const server = app.listen(PORT, () =>                                                                   // websocket  server x server HTTP
+console.log(`Server on line at port ${PORT}`)
 );
-//const io = new Server(serverHTTP);
-export const io = new Server(serverHTTP);
 
+
+// Chat
+let chatUsers = [];
+let messages = [];
+
+
+io = new Server(server);                                                                       // websocket - cambier serverHTTP por server
+
+io.on("connection", socket=>{
+  console.log(`Client id ${socket.id} connected...!!!`);
+  socket.on("id", chatName=>{
+    chatUsers.push({id: socket.id, chatName})
+    socket.emit("previousMessages",messages)
+    socket.broadcast.emit("New User", chatName)
+  })
+  socket.on("message", (chatName, message)=>{
+    messages.push({chatName, message});
+    chatService.addMessage (chatName, message);
+    io.emit("newMessage", chatName, message); 
+  })
+  socket.on("disconnect",()=>{
+    let chatUser= chatUsers.find(u=>u.id===socket.id)
+    if (chatUser) {
+      io.emit("userLogout", chatUser.chatName)
+    }
+  })
+})
+
+
+
+// Connection to mongoDb
 const connDB = async () => {
   // Connects to mongoDb
   try {

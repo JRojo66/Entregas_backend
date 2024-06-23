@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import { SECRET } from "../utils.js";
 
 export const authjwt=(req, res, next)=>{
+    console.log(req.cookies["codercookie"]);
     if(!req.cookies["codercookie"]){
         res.setHeader('Content-Type','application/json');
         return res.status(401).json({error:`User not valid...!!!`})

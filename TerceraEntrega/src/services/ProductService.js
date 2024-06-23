@@ -37,7 +37,7 @@ class ProductService {
   updateProducts = async (id, productData) => {
     return this.dao.update(id, productData);
   }
-  deleteProducts = async (productId) => {
+  deleteProduct = async (productId) => {
     return this.dao.delete(productId);
   }
 }

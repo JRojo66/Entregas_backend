@@ -2,7 +2,8 @@
 import { productService } from "../services/ProductService.js";
 import { isValidObjectId } from "mongoose";
 import { validationProducts } from "../validation.js";
-import { io } from "../app.js";
+import { productsModel } from "../dao/models/productsModel.js";           // Quitar
+///import { io } from "../app.js";                                       // Revisar - porque no lo esta exportando?
 
 // Instanciates                                                         // Para la persistencia en FS?
 // let productManager = new ProductManager(
@@ -194,7 +195,7 @@ export class ProductController {
         thumbnails,
       });
       let newProduct = await productService.getAllProducts();
-        req.io.emit("newProduct", title);
+        // req.io.emit("newProduct", title);                                                                                    // Revisar productrt?
       return res.status(201).json(`Product added: ${productAdded}`);
     } catch (error) {
       res
@@ -205,7 +206,7 @@ export class ProductController {
     }
   };
 
-  static update = async (req, res) => {
+  static updateProduct = async (req, res) => {
     let { pid } = req.params;
     if (!isValidObjectId(pid)) {
       return res.status(400).json({
@@ -247,7 +248,7 @@ export class ProductController {
     }
   };
 
-  static delete = async (req, res) => {
+  static deleteProduct = async (req, res) => {
     let { pid } = req.params;
     if (!isValidObjectId(pid)) {
       return res.status(400).json({
@@ -255,13 +256,14 @@ export class ProductController {
       });
     }
     try {
-      let products = await productService.deleteProducts(pid);
-      if (products.deletedCount > 0) {
-        await productService.getAllProducts();
-        io.emit("deleteProducts", productService.getAllProducts());
+      //let products = await productService.deleteProducts(pid);
+      let product = await productService.getProductBy({_id: pid})
+      if (product){               
+        await productService.deleteProduct(pid);
+                //io.emit("deleteProducts", productService.getAllProducts());                                   // Revisar io
         return res.json({ payload: `Product ${pid} deleted` });
-      } else {
-        console.log("try product inexistent");
+      }
+      else {
         return res.status(404).json({ error: `${pid} inexistent` });
       }
     } catch (error) {
