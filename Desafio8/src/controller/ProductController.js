@@ -3,9 +3,9 @@ import { productService } from "../services/ProductService.js";
 import { isValidObjectId } from "mongoose";
 import { validationProducts } from "../validation.js";
 import { productsModel } from "../dao/models/productsModel.js";           // Quitar
-import { CustomError } from "../utils/CustomError.js";
-import { argumentosHeroe } from '../utils/erroresHeroes.js';                                                               // Borrar Heroes
+import { CustomError } from "../utils/CustomError.js";                                                            // Borrar Heroes
 import { ERROR_TYPE } from "../utils/EErrors.js";
+import "express-async-errors";
 ///import { io } from "../app.js";                                       // Revisar - porque no lo esta exportando?
 
 // Instanciates                                                         // Para la persistencia en FS?
@@ -145,41 +145,34 @@ export class ProductController {
   };
 
   static createProduct = async (req, res) => {
-    // let {
-    //   title,
-    //   description,
-    //   code,
-    //   price,
-    //   status,
-    //   stock,
-    //   category,
-    //   thumbnails,
-    // } = req.body;
+    let {
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+      thumbnails,
+    } = req.body;
 
-    let {name}=req.body
-    if(!name){
-        // res.setHeader('Content-Type','application/json');
-        // return res.status(400).json({error:`Complete al menos el name`})
-        return CustomError.createError("Argumento name faltante", argumentosHeroe(req.body), "Complete la propiedad name", ERROR_TYPE.INVALID_ARGUMENTS)
+    const errors = validationProducts(
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+      thumbnails
+    );
+    if (errors.length > 0) {
+      res.setHeader("Content-Type", "application/json");
+      return res.status(400).json({ errors }); // Return an array of validation errors
     }
 
-
-    // const errors = validationProducts(
-    //   title,
-    //   description,
-    //   code,
-    //   price,
-    //   status,
-    //   stock,
-    //   category,
-    //   thumbnails
-    // );
-    // if (errors.length > 0) {
-    //   res.setHeader("Content-Type", "application/json");
-    //   return res.status(400).json({ errors }); // Return an array of validation errors
-    // }
-
     let exists;
+
     try {
       exists = await productService.getProductBy({ code });
     } catch (error) {

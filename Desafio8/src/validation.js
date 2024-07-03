@@ -1,63 +1,44 @@
 import { ERROR_TYPE } from "./utils/EErrors.js";
-import { productArguments } from "./utils/productErrors.js";
 import { CustomError } from "./utils/CustomError.js";
-import { argumentosHeroe } from './utils/erroresHeroes.js';
+import { productsArguments } from './utils/productErrors.js';
+import "express-async-errors";
 
 export const validationProducts = (title, description, code, price, status, stock, category, thumbnails) => {
     const errors = [];
-    const name = {}
-    let productValidation = {title, description, code, price, status, stock, category, thumbnails}
-    if (!title) {
-      //errors.push("Title is required.");
-      console.log("argumentosHeroe(req.body); ",argumentosHeroe({}));
-      CustomError.createError("xxx", argumentosHeroe({}), "xxx", ERROR_TYPE.INVALID_ARGUMENTS)
-      //CustomError.createError("Title is required.", productArguments(title, description, code, price, status, stock, category, thumbnails), "Complete title", ERROR_TYPE.INVALID_ARGUMENTS)
-    } else if (typeof title !== "string" || title.trim() === "") {
-      //errors.push("Title must be a non-empty string.");
-      CustomError.createError("xxx", argumentosHeroe({}), "xxx", ERROR_TYPE.INVALID_ARGUMENTS)
-      //CustomError.createError("Title must be a non-empty string.", productArguments(title, description, code, price, status, stock, category, thumbnails), "Complete title", ERROR_TYPE.INVALID_ARGUMENTS)
-    }
+    if (!title || typeof title !== "string" || title.trim() === "") {
+      CustomError.createError("Missing or wrong argument", productsArguments("title"), "Title is missing or not a string", ERROR_TYPE.INVALID_ARGUMENTS);
+    } 
   
-    if (!description) {
-      errors.push("Description is required.");
-    } else if (typeof description !== "string" || description.trim() === "") {
-      errors.push("Description must be a non-empty string.");
-    }
+    if (!description || typeof  description !== "string" || description.trim() === "") {
+      CustomError.createError("Missing or wrong argument", productsArguments("description"), "Description is missing or not a string", ERROR_TYPE.INVALID_ARGUMENTS);
+    } 
   
-    if (!code) {
-      errors.push("Code is required.");
-    } else if (typeof code !== "string" || code.trim() === "") {
-      errors.push("Code must be a non-empty string.");
-    }
+    if (!code || typeof code !== "string" || code.trim() === "") {
+      CustomError.createError("Missing or wrong argument", productsArguments("code"), "Code is missing or not a string", ERROR_TYPE.INVALID_ARGUMENTS);
+    } 
   
     if (!price || isNaN(price) || price <= 0) {
-      errors.push(
-        "Price is required, must be a number, and must be greater than 0."
-      );
+      CustomError.createError("Missing or wrong argument", productsArguments("price"), "Price is missing or not a number", ERROR_TYPE.INVALID_ARGUMENTS);
     }
   
     if (typeof status !== "boolean") {
-      errors.push("Status must be a boolean value (true or false).");
+      CustomError.createError("Missing or wrong argument", productsArguments("status"), "Status is missing or not boolean", ERROR_TYPE.INVALID_ARGUMENTS);
     }
   
     if (!stock || isNaN(stock) || stock < 0) {
-      errors.push(
-        "Stock is required, must be a number, and must be non-negative."
-      );
+      CustomError.createError("Missing or wrong argument", productsArguments("stock"), "Stock is missing, not a nummber or negative", ERROR_TYPE.INVALID_ARGUMENTS);
     }
   
-    if (!category) {
-      errors.push("Category is required.");
-    } else if (typeof category !== "string" || category.trim() === "") {
-      errors.push("Category must be a non-empty string.");
-    }
+    if (!category || typeof category !== "string" || category.trim() === "") {
+      CustomError.createError("Missing or wrong argument", productsArguments("category"), "Category  is missing, not a nummber or negative", ERROR_TYPE.INVALID_ARGUMENTS);
+    } 
   
     if (
       thumbnails &&
       (!Array.isArray(thumbnails) ||
         thumbnails.some((thumbnail) => typeof thumbnail !== "string"))
     ) {
-      errors.push("Thumbnails must be an array of strings (image URLs).");
+      CustomError.createError("Missing or wrong argument", productsArguments("thumbnail"), "Thumbnail  is missing or not a string", ERROR_TYPE.INVALID_ARGUMENTS);
     }
     return errors;
   };

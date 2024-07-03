@@ -1,16 +1,27 @@
 import os from "os"
 
-export function productArguments(title, description, code, price, status, stock, category, thumbnails){
+export function productsArguments(argument){
+    return `
+    
+Invalid arguments:
 
-    return `-invalid arguments:
-Mandatory arguments:
-    - title: String. ${title} received
-    ... COMPLETAR CON LOS DEMAS ARGUMENTOS
-Optional arguments:
-    -alias, powers, team, y publisher. Se recibió: ${JSON.stringify(description, code, price, status, stock, category, thumbnails)}
+Mandatory arguments:      
 
-Fecha: ${new Date().toUTCString()}
-Usuario: ${os.userInfo().username}
-Terminal: ${os.hostname()}`
+      - title
+      - description
+      - code
+      - price
+      - status
+      - stock
+      - category
+      - thumbnails
+      
+      ${argument} is missing or invalid...!
+
+Date: ${new Date().toUTCString()}
+User: ${os.userInfo().username}
+Terminal: ${os.hostname()}
+
+`
 
 }

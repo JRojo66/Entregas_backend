@@ -16,17 +16,11 @@ import { initPassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
 import { config } from './config/config.js';
 import { chatService } from "./services/chatService.js";
-
 import { errorHandler } from "./middleware/Errorhandler.js";
-import { router as heroesRouter } from './routes/heroesRouter.js';                                            // Borrar Heroes
-           
-
-
 
 const PORT = config.PORT;
 const app = express();
 let io;
-
 
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
@@ -66,8 +60,6 @@ app.use(
 app.use("/api/cart", cartRouter); // directs /api/cart to cartRouter
 app.use("/api/sessions", sessionRouter);
 app.use("/mockingproducts", mockingRouter);
-
-app.use('/api/heroes', heroesRouter)                                                  // Borrar Heroes
 
 app.use(errorHandler)
 
