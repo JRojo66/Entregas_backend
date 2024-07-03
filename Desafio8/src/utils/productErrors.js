@@ -7,14 +7,14 @@ Invalid arguments:
 
 Mandatory arguments:      
 
-      - title
-      - description
-      - code
-      - price
-      - status
-      - stock
-      - category
-      - thumbnails
+      - title (String)
+      - description (String)
+      - code (String)
+      - price (Number)
+      - status (Boolean)
+      - stock (Number)
+      - category (String)
+      - thumbnails (Array)
       
       ${argument} is missing or invalid...!
 
