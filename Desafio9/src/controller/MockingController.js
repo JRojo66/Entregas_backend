@@ -1,4 +1,3 @@
-import { cartService } from "../services/CartService.js";
 import { fakerEN_US as faker } from "@faker-js/faker";
 
 export class MockingController {
