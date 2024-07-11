@@ -6,3 +6,9 @@
 {"level":"error","message":"loggerTest error"}
 {"level":"warning","message":"loggerTest warning"}
 {"level":"info","message":"loggerTest info"}
+{"level":"fatal","message":"loggerTest fatal"}
+{"level":"fatal","message":"loggerTest fatal"}
+{"level":"fatal","message":"loggerTest fatal"}
+{"level":"error","message":"loggerTest error"}
+{"level":"warning","message":"loggerTest warning"}
+{"level":"info","message":"loggerTest info"}

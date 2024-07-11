@@ -8,7 +8,6 @@ export class loggerTestController {
           customLogger.info("loggerTest info");
           customLogger.http("loggerTest http");
           customLogger.debug("loggerTest debug");
-          res.setHeader('Content-Type','application/json');
           return res.status(200).json({payload:"errors logged"});
     }
 }

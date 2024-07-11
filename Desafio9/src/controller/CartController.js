@@ -11,7 +11,7 @@ import { customLogger } from "../utils.js";
 export class CartController {
   static getAllCarts = async (req, res) => {
     try {
-      //throw new Error("Simulated error for testing purposes Nr 1"); // Forces Error for Desafio9 - delete after correction
+      throw new Error("Simulated error for testing purposes Nr 1"); // Forces Error for Desafio9 - delete after correction
       let cart = await cartService.getAllCarts();
       if (req.query.limit) {
         // Check if 'limit' exists in the request query
