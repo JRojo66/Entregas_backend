@@ -4,26 +4,24 @@ import { engine } from "express-handlebars";
 import sessions from "express-session";
 import MongoStore from "connect-mongo";
 import { Server } from "socket.io";
-import {__dirname, middLogger, logger} from "./utils.js";
+import { __dirname, middLogger, customLogger } from "./utils.js";
 import { join } from "path";
 import { router as productsRouter } from "./routes/productsRouter.js";
 import { router as cartRouter } from "./routes/cartRouter.js";
 import { router as viewsRouter } from "./routes/views.Router.js";
 import { router as sessionRouter } from "./routes/sessionRouter.js";
-import {router as mockingRouter} from "./routes/mokingRouter.js"
+import { router as mockingRouter } from "./routes/mokingRouter.js";
+import { router as loggerTestRouter } from "./routes/loggerTestRouter.js";
 import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
-import { config } from './config/config.js';
+import { config } from "./config/config.js";
 import { chatService } from "./services/chatService.js";
 import { errorHandler } from "./middleware/Errorhandler.js";
-
-
 
 const PORT = config.PORT;
 const app = express();
 let io;
-
 
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
@@ -44,8 +42,7 @@ app.use(
     saveUninitialized: true,
     store: MongoStore.create({
       ttl: 3600,
-      mongoUrl:
-        config.MONGO_URL,
+      mongoUrl: config.MONGO_URL,
     }),
   })
 );
@@ -65,59 +62,56 @@ app.use(
 app.use("/api/cart", cartRouter); // directs /api/cart to cartRouter
 app.use("/api/sessions", sessionRouter);
 app.use("/mockingproducts", mockingRouter);
+app.use("/loggerTest", loggerTestRouter);
 
-app.use(errorHandler)
-
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
-  //console.log(`Server on line at port ${PORT}`)
-  logger.info(`Server on line at port ${PORT}`);
-}
-
-);
+  customLogger.debug(`Server on line at port ${PORT}`);
+});
 
 // Chat
 let chatUsers = [];
 let messages = [];
 
+io = new Server(server);
 
-io = new Server(server); 
-
-io.on("connection", socket=>{
+io.on("connection", (socket) => {
   console.log(`Client id ${socket.id} connected...!!!`);
-  socket.on("id", chatName=>{
-    chatUsers.push({id: socket.id, chatName})
-    socket.emit("previousMessages",messages)
-    socket.broadcast.emit("New User", chatName)
-  })
-  socket.on("message", (chatName, message)=>{
-    messages.push({chatName, message});
-    chatService.addMessage (chatName, message);
-    io.emit("newMessage", chatName, message); 
-  })
-  socket.on("disconnect",()=>{
-    let chatUser= chatUsers.find(u=>u.id===socket.id)
+  socket.on("id", (chatName) => {
+    chatUsers.push({ id: socket.id, chatName });
+    socket.emit("previousMessages", messages);
+    socket.broadcast.emit("New User", chatName);
+  });
+  socket.on("message", (chatName, message) => {
+    messages.push({ chatName, message });
+    chatService.addMessage(chatName, message);
+    io.emit("newMessage", chatName, message);
+  });
+  socket.on("disconnect", () => {
+    let chatUser = chatUsers.find((u) => u.id === socket.id);
     if (chatUser) {
-      io.emit("userLogout", chatUser.chatName)
+      io.emit("userLogout", chatUser.chatName);
     }
-  })
-})
-
-
+  });
+});
 
 // Connection to mongoDb
 const connDB = async () => {
   // Connects to mongoDb
   try {
-    await mongoose.connect(
-      config.MONGO_URL,
-      {
-        dbName: config.DB_NAME,
-      }
-    );
-    console.log("DB Online...!!!");
+    await mongoose.connect(config.MONGO_URL, {
+      dbName: config.DB_NAME,
+    });
+    customLogger.debug("DB Online...!!!");
   } catch (error) {
-    console.log("Error al conectar a DB ", error.message);
+    let errorData = {
+      title: "Error connecting to DB ",
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
+    customLogger.error(JSON.stringify(errorData, null, 5));
   }
 };
 connDB();

@@ -1,7 +1,7 @@
 import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
 import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 import jwt from "jsonwebtoken";
-//import { SECRET } from "../utils.js";
+import { SECRET } from "../utils.js";
 import { config } from '../config/config.js';
 
 
@@ -30,7 +30,7 @@ export class ViewsController {
         page = req.query.page;
       }
       let token = req.cookies["codercookie"];
-      let user = jwt.verify(token, config.SECRET);  // For sessions - let user = req.session.user; 
+      let user = jwt.verify(token, SECRET);  // For sessions - let user = req.session.user; 
       let products = await productManager.getPaginated(
         query,
         limit,
@@ -64,7 +64,7 @@ export class ViewsController {
   static getCartById = async (req, res) => {
     let { cid } = req.params;
     let token = req.cookies["codercookie"];
-    let user = jwt.verify(token, config.SECRET); // For sessions req.session.user;
+    let user = jwt.verify(token, SECRET); // For sessions req.session.user;
     let cart = await cartManager.getBy({ _id: cid });
     res.setHeader("Content-Type", "text/html");
     return res.status(200).render("cart", { cart, user });

@@ -1,7 +1,8 @@
 import { ERROR_TYPE } from "../utils/EErrors.js";
+import { customLogger } from "../utils.js";
 
 export const errorHandler = (error, req, res, next) => {
-  console.log(`${error.cause ? error.cause : error.message}`);
+  customLogger.error(`${error.cause ? error.cause : error.message}`);
   switch (error.code) {
     case ERROR_TYPE.AUTENTICATION || ERROR_TYPE.AUTHORIZATION:
       res.setHeader("Content-Type", "application/json");

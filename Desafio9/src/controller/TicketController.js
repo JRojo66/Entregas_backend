@@ -3,11 +3,13 @@ import { cartService } from "../services/CartService.js";
 import { ticketService } from "../services/TicketService.js";
 import { userService } from "../services/UserService.js";
 import { productService } from "../services/ProductService.js";
+import { customLogger } from "../utils.js";
 
 export class TicketController {
   static createTicket = async (req, res) => {
     try {
       // Create unique code
+      throw new Error("Simulated error for testing purposes Nr2");                                                               // Forces Error for Desafio9 - delete after correction
       const code = new Date().getTime();
 
       // Get cart id from request params
@@ -25,7 +27,6 @@ export class TicketController {
       let available = [];
       let notAvailable = [];
       let amount = 0;
-      console.log("cart.product.length", cart.products.length); // clg
       for (let i = 0; i < cart.products.length; i++) {
         // ** Remember avoid using forEach with await inside - Doesn't work properly - methods do not await and generate problems
         let pid = cart.products[i].product._id;
@@ -77,6 +78,13 @@ export class TicketController {
           });
       }
     } catch (error) {
+      let errorData = {
+        title: "Error creating ticket",
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    }
+      customLogger.error(JSON.stringify(errorData, null, 5));
       return res.json({
         error:
           `Unexpected server error - Try again later or contact admninistrator` +

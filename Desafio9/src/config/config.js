@@ -10,5 +10,7 @@ dotenv.config(
 export const config={
     PORT: process.env.PORT||8080,
     MONGO_URL: process.env.MONGO_URL, 
-    DB_NAME: process.env.DB_NAME
+    DB_NAME: process.env.DB_NAME,
+    SECRET: process.env.SECRET,
+    RUN_MODE: process.env.RUN_MODE
 }

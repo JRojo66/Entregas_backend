@@ -3,6 +3,7 @@ import { dirname, join } from "path";
 //import crypto from "crypto";
 import bcrypt from "bcrypt";
 import winston from "winston";
+import { config } from './config/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = dirname(__filename);
@@ -16,107 +17,49 @@ export const generateHash = (password) =>
 export const isValidPassword = (password, passwordHash) =>
   bcrypt.compareSync(password, passwordHash);
 
-const transporteArchivoError = new winston.transports.File({
-  level: "warn",
-  filename: "./src/errorLogs.log",
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-});
 
-const filtroDebug = winston.format((data) => {
-  // console.log(data)
-  if (data.level === "debug") {
-    data.message = data.message.toUpperCase();
-    return data;
-  }
-});
+let customLevels = {
+  fatal: 0,
+  error: 1,
+  warning: 2,
+  info: 3,
+  http: 4,
+  debug: 5,
+};
 
-const transporteArchivoDebug = new winston.transports.File({
-  level: "debug",
-  filename: "./src/debugLogs.log",
-  format: winston.format.combine(
-    filtroDebug(),
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-});
-
-export const logger = winston.createLogger({
+const customLoggerConsole = winston.createLogger({
+  levels: customLevels,
   transports: [
     new winston.transports.Console({
-      level: "http",
+      level: "debug",
       format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.colorize(),
+        // winston.format.colorize(
+        //     {
+        //         colors: {error: "bold white redBG", info: "blue", debug:"green"}
+        //     }
+        // ),
         winston.format.simple()
-        //winston.format.json()
       ),
     }),
-    transporteArchivoError,
   ],
 });
 
+export const customLogger = winston.createLogger({
+  levels: customLevels,
+  transports: [
+    new winston.transports.File({
+      level: "info",
+      filename: "./src/errors.log",
+      format: winston.format.combine(winston.format.timestamp()),
+    }),
+  ],
+});
 
-let debug = true; // tomarlo de los argumentos por consola, o de la variables de entorno
-if (debug == true) {
-  logger.add(transporteArchivoDebug);
-}
-
-let customLevels = {
-    grave: 0,
-    medio: 1,
-    leve: 2
-}
-
-const loggerPersonalizadoConsole = winston.createLogger(
-    {
-        levels: customLevels,
-        transports: [
-            new winston.transports.Console(
-                {
-                    level: "leve",
-                    format: winston.format.combine(
-                        winston.format.colorize(
-                            {
-                                colors: {grave: "bold white redBG", medio: "blue", leve:"green"}
-                            }
-                        ),
-                        winston.format.simple(),
-                    )
-
-                }
-            )
-        ]
-    }
-)
-
-
-const loggerPersonalizado = winston.createLogger(
-    {
-        levels: customLevels,
-        transports: [
-            new winston.transports.File(
-                {
-                    level: "leve",
-                    filename: "./src/erroresGraves.log",
-                    format: winston.format.combine(
-                        winston.format.timestamp(),
-                    )
-
-                }
-            )
-        ]
-    }
-)
-
-if(debug === true){
-    loggerPersonalizado.add(loggerPersonalizadoConsole)
+if (config.RUN_MODE === "DEV") {
+  customLogger.add(customLoggerConsole);
 }
 
 export const middLogger = (res, req, next) => {
-  req.logger = logger;
-  req.logger2 = loggerPersonalizado;
+  req.logger = customLogger;
   next();
 };

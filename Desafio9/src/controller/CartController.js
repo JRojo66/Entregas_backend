@@ -1,8 +1,9 @@
 // import { CartManagerMONGO as CartManager } from "../dao/CartManagerMONGO.js";
 import { cartService } from "../services/CartService.js";
 //import { ProductManagerMONGO as ProductManager } from "../dao/ProductManagerMONGO.js";
-import { productService } from "../services/ProductService.js"
+import { productService } from "../services/ProductService.js";
 import { isValidObjectId } from "mongoose";
+import { customLogger } from "../utils.js";
 
 // const cartManager = new CartManager();
 // let productManager = new ProductManager(); // Revisar cartRouter. let productManager = new ProductManager(join(__dirname, "data", "products.json"));   Esta asi porque viene de persistencia en memoria?
@@ -10,6 +11,7 @@ import { isValidObjectId } from "mongoose";
 export class CartController {
   static getAllCarts = async (req, res) => {
     try {
+      //throw new Error("Simulated error for testing purposes Nr 1"); // Forces Error for Desafio9 - delete after correction
       let cart = await cartService.getAllCarts();
       if (req.query.limit) {
         // Check if 'limit' exists in the request query
@@ -21,6 +23,13 @@ export class CartController {
       }
       return res.json(cart);
     } catch (error) {
+      let errorData = {
+        title: "Error accesing Carts DB",
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      };
+      customLogger.error(JSON.stringify(errorData, null, 5));
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
         error: `Unexpected server error - Try again later or contact admninistrator`,
@@ -35,7 +44,7 @@ export class CartController {
       return res.json({ error: "Pls, enter a valid id..." });
     }
     try {
-      let cart = await cartService.getCartBy({ _id: cid }); //** */
+      let cart = await cartService.getCartBy({ _id: cid });
       if (!cart) {
         return res.json({ message: `cart id ${cid} not found` });
       } else {
@@ -71,9 +80,7 @@ export class CartController {
     } else {
       cart.products[productIndex].qty++;
     }
-
     let result = await cartService.updateCart(cid, cart);
-
     if (result.modifiedCount > 0) {
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json("Cart updated");
@@ -189,7 +196,7 @@ export class CartController {
     // product validation in products
     let existsInProducts;
     try {
-      existsInProducts = await productService.getProductBy({ _id: pid });          // Volver con Product services
+      existsInProducts = await productService.getProductBy({ _id: pid }); // Volver con Product services
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
@@ -271,8 +278,7 @@ export class CartController {
     return res.json(`Products in cart ${cid} were deleted`);
   };
 
-
-// Pasar a TicketController
+  // Pasar a TicketController
 
   static addNewTicket = async (req, res) => {
     try {
@@ -286,6 +292,4 @@ export class CartController {
       });
     }
   };
-
-
 }
