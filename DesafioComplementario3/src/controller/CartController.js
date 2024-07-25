@@ -71,6 +71,12 @@ export class CartController {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({ error: `Can't find product id ${pid}` });
     }
+//** llldfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaavmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm */
+    if(product.owner===req.user.email)
+      {
+        return res.status(401).json({ error: `Can't buy your own products... Doesn't make sense, ask Coderhouse why...` });
+      }
+
 
     let productIndex = cart.products.findIndex((p) => p.product == pid);
 
@@ -172,6 +178,12 @@ export class CartController {
           error: `There is no product ${pid} does not exist in cart ${cid}`,
         });
       }
+
+if(product.owner===req.user.email)
+  {
+    return res.status(401).json({ error: `Can't buy your own products... Doesn't make sense, ask Coderhouse why...` });
+  }
+
       let newProducts = { products: cart.products };
       const newCart = await cartService.updateCart(cid, newProducts);
       return res.json(`Updated cart: ${pid} with qty: ${newQty}`);

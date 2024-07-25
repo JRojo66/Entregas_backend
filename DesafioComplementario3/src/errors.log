@@ -5,3 +5,5 @@
 {"level":"error","message":"token is not defined"}
 {"level":"error","message":"jwt expired"}
 {"level":"error","message":"Assignment to constant variable."}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 241"}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 294"}

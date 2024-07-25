@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { UserDTO } from "../dto/userDTO.js"
 import { config } from '../config/config.js';
 import nodemailer from "nodemailer";
+import { userService } from "../services/UserService.js";
 
 
 const userManager = new UserManager();
@@ -156,5 +157,32 @@ export class SessionsController {
       res.setHeader("Content-Type", "application/json");
       return res.status(401).json({ userJWT: `${error}`, userSessions });
     }
-  };
+  }
+
+  static premium = async (req,res) => {
+    try {
+    let uid = req.params.uid;
+      let user = await userManager.getBy({ _id: uid });
+      if(user.role === "premium"){
+        await userService.updateUser({_id:uid},{role:"user"});
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:`User ${user.email} is now user`});
+      }
+      if(user.role === "user"){
+        await userService.updateUser({_id:uid},{role:"premium"});
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:`User ${user.email} is now premium`});
+      }
+      
+    } catch (error) {
+      res.setHeader('Content-Type','application/json');
+      return res.status(500).json(
+        {
+          error:`Unexpected server error - contact your administrator`,
+          detalle:`${error}`
+        }
+      )
+      
+    }
+  }
 }

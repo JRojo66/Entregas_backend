@@ -11,6 +11,7 @@ const productsSchema = new mongoose.Schema(
         status: Boolean,
         stock: Number,
         category: String,
+        owner: String,
         thumbnails: Array,
     },
     {

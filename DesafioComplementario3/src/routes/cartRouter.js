@@ -14,10 +14,10 @@ router.get("/:cid", CartController.getCartById);
 
 // jwt login and user role required
 router.post("/:cid/product/:pid", passport.authenticate("current", {session: false}),   (req, res, next) => {
-    if (req.user.role === "user") {
+    if (req.user.role === "user" || req.user.role === "premium") {
       CartController.addProductInCart(req, res, next);
     } else {
-      res.status(403).json({ message: "admin role required." });
+      res.status(403).json({ message: "user or premium role required."});
     }
   });
 router.put("/:cid", CartController.updateCart);

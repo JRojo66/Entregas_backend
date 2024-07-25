@@ -150,6 +150,7 @@ export class ProductController {
       status,
       stock,
       category,
+      owner,
       thumbnails,
     } = req.body;
 
@@ -161,6 +162,7 @@ export class ProductController {
       status,
       stock,
       category,
+      // do not validate owner. if owner is not specified, owner is "admin"
       thumbnails
     );
     if (errors.length > 0) {
@@ -168,6 +170,7 @@ export class ProductController {
       return res.status(400).json({ errors }); // Return an array of validation errors
     }
 
+    // Validate product exists
     let exists;
     try {
       exists = await productService.getProductBy({ code });
@@ -183,6 +186,14 @@ export class ProductController {
         .status(400)
         .json({ error: `Product with code ${code} already exists` });
     }
+    
+    console.log("owner antes: ", owner);
+    // if owner is not specified, owner is "admin"
+    if(!owner){
+      owner="admin"
+    }
+    console.log("owner despues: ", owner);
+
     try {
       let productAdded = await productService.addProduct({
         title,
@@ -192,6 +203,7 @@ export class ProductController {
         status,
         stock,
         category,
+        owner,
         thumbnails,
       });
       let newProduct = await productService.getAllProducts();
@@ -237,6 +249,10 @@ export class ProductController {
     }
 
     try {
+      let product = await productService.getProductBy({_id: pid})
+      if(req.user.email !== product.owner && req.user.name !== "admin"){
+        return res.json({ payload: `Only the product owner can delete this product...!!!` });
+      }
       const products = await productService.updateProducts(pid, updatedProduct);
       return res.json(products);
     } catch (error) {
@@ -257,6 +273,9 @@ export class ProductController {
     }
     try {
       let product = await productService.getProductBy({_id: pid})
+      if(req.user.email !== product.owner && req.user.name !== "admin"){
+        return res.json({ payload: `Only the product owner can delete this product...!!!` });
+      }
       if (product){               
         await productService.deleteProduct(pid);
         req.serverSocket.emit("deletedProduct", await productService.getAllProducts());
@@ -266,7 +285,7 @@ export class ProductController {
         return res.status(404).json({ error: `${pid} inexistent` });
       }
     } catch (error) {
-      return res.status(300).json({ error: `Error deleting product ${pid}, error: ${error}` });
+      return res.status(300).json({ error: `Error deleting product ${pid}`});        //  ,error: ${error}
     }
   };
 }

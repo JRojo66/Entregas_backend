@@ -13,3 +13,4 @@ router.get('/login/github',passport.authenticate("github",{}), SessionsControlle
 router.get('/callBackGithub',passport.authenticate("github",{failureRedirect:"/api/sessions/error"}),SessionsController.callBackGitHub);
 router.get("/logout", SessionsController.logout);
 router.get("/current", SessionsController.current);  // Route get user logged in sessions and JWT
+router.get("/premium/:uid", SessionsController.premium); 

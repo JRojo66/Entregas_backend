@@ -8,4 +8,9 @@ const buy=async(pid)=>{
           let data=await payload.json()
           alert("Product added...!!!")
       }
+      if(payload.status===401){
+        let data=await payload.json()
+        alert("Can't buy your own products... Doesn't make sense, ask Coderhouse why...")
+    }
+      
 }

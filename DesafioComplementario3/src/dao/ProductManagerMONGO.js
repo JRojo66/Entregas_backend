@@ -15,6 +15,7 @@ export class ProductManagerMONGO {
     status = true,
     stock,
     category,
+    owner,
     thumbnails = []
   }) => {
     let productAdded = {
@@ -24,6 +25,7 @@ export class ProductManagerMONGO {
       price,
       status,
       stock,
+      owner,
       category,
       thumbnails,
     };

@@ -5,11 +5,11 @@ import passport from "passport";
 import { ProductController } from "../controller/ProductController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 
-router.get('/',roleMiddleware(["admin","user"]),ProductController.getProducts); 
-router.get("/:id",roleMiddleware(["admin","user"]),ProductController.getProductById); 
-router.post("/", roleMiddleware(["admin"]),ProductController.createProduct); 
-router.put("/:pid", roleMiddleware(["admin"]),ProductController.updateProduct); 
-router.delete("/:pid", roleMiddleware(["admin"]),ProductController.deleteProduct); 
+router.get('/',roleMiddleware(["admin","user","premium"]),ProductController.getProducts); 
+router.get("/:id",roleMiddleware(["admin","user","premium"]),ProductController.getProductById); 
+router.post("/", roleMiddleware(["admin","premium"]),ProductController.createProduct); 
+router.put("/:pid", roleMiddleware(["admin","premium"]),ProductController.updateProduct); 
+router.delete("/:pid", roleMiddleware(["admin", "premium"]),ProductController.deleteProduct); 
 
   
 
