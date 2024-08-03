@@ -11,75 +11,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  payload:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        _id: 
-                          type: string
-                          example: "662c3576518100669b538dec"
-                        id:  
-                          type: string
-                          example: "662c3576518100669b538dec"
-                        title:
-                          type: string
-                          example: "Kite"
-                        description:
-                          type: string
-                          example: "This kite delivers exceptional control and responsiveness, perfect for catching waves, performing jumps, or cruising across the water. Choose from a variety of sizes and styles to match your riding style and wind conditions.  Take your kitesurfing to the next level with this exhilarating kite!"
-                        price:
-                          type: number
-                          example: "900"
-                        status:
-                          type: boolean
-                          example: true
-                        category:
-                          type: string
-                          example: "Sports"
-                        owner:
-                          type: email
-                          example: "lionel@messi.com"
-                        thumbnails: 
-                          type: array
-                          items:
-                            type: string
-                            example: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzas_i_q8gY-b0WUomGrSdqalyGvdiJDPbZA&s", "sin imagen3b", "sin imagen3c"]
-                        code:
-                          type: string
-                          example: "abc128"
-                        stock:
-                          type: integer
-                          example: 49
-                        updatedAt:
-                          type: date
-                          example: "2024-07-11T00:44:38.938Z"
-                  totalPages:
-                    type: integer
-                    example: 3
-                  prevPage:
-                    type: integer
-                    example: 1
-                  nextPage:
-                    type: integer
-                    example: 3
-                  hasPrevPage:
-                    type: boolean
-                    example: true
-                  hasNextPage:
-                    type: boolean
-                    example: true
-                  prevLink:
-                    type: string
-                    example: "http://localhost:8080/api/products?page=1&limit=2&query=%7B%22category%22%3A%22Sports%22%7D&sort=%7B%22price%22%3A-1%7D"
-                  nextLink:
-                    type: string
-                    example: "http://localhost:8080/api/products?page=3&limit=2&query=%7B%22category%22%3A%22Sports%22%7D&sort=%7B%22price%22%3A-1%7D"
+                $ref: '#/components/schemas/PaginatedProducts'
         '400':
           description: Error - Wrong input parameters
           content:
@@ -99,94 +31,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                title:
-                  type: string
-                description:
-                  type: string
-                code: 
-                  type: string
-                price:
-                  type: integer
-                status: 
-                  type: boolean
-                stock: 
-                  type: integer
-                category:
-                  type: string
-                thumbnails: 
-                  type: array
+              $ref: '#/components/schemas/Product'
       responses: 
         '200':
           description: Successfull product creation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  payload:
-                      type: object
-                      properties:
-                        title:
-                          type: string
-                          example: producto prueba4
-                          description: Product title
-                        description:
-                          type: string
-                          example: este es un producto prueba4
-                          description: Product description
-                        code:
-                          type: string
-                          example: abc001
-                          description: Product code
-                        price:
-                          type: number
-                          format: double
-                          example: 400
-                          description: Product price
-                        status:
-                          type: boolean
-                          example: true
-                          description: Product status (active or inactive)
-                        stock:
-                          type: integer
-                          example: 40
-                          description: Product stock quantity
-                        category:
-                          type: string
-                          example: Categoria prueba4
-                          description: Product category
-                        owner:
-                          type: string
-                          example: admin
-                          description: Product owner
-                        thumbnails:
-                          type: array
-                          items:
-                            type: string
-                          example: ["sin imagen3a", "sin imagen3b", "sin imagen3c"]
-                          description: Array of product thumbnail URLs
-                        _id:
-                          type: string
-                          example: 66a6ba6c7efc9e3fba99707d
-                          description: Product unique identifier
-                        createdAt:
-                          type: string
-                          format: date-time
-                          example: 2024-07-28T21:38:53.003Z
-                          description: Product creation date and time
-                        updatedAt:
-                          type: string
-                          format: date-time
-                          example: 2024-07-28T21:38:53.003Z
-                          description: Product update date and time
-                        __v:
-                          type: integer
-                          example: 0
-                          description: Version number (internal use) 
+                $ref: '#/components/schemas/CreateProductResponse'              
         '400':
                   description: Error creating product. Input required, wrong data type, or already existing product
                   content:
@@ -209,18 +61,3 @@ paths:
                             type: string
                             example: Unexpected server error - Try again later or contact admninistrator
                             description: Error description
-
-                            components:
-  schemas:
-    Product:
-      type: object
-      properties:
-        product:
-          type: string
-          description: ID del producto
-        qty:
-          type: integer
-          description: Cantidad del producto
-        _id:
-          type: string
-          description: Identificador único del producto en el carrito

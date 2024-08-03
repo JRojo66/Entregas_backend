@@ -11,10 +11,12 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                email: 
                   type: string
+                  example: test@gmail.com
                 password:
                   type: string
+                  example: 123
       responses:
         '200':
           description: Successfull login
