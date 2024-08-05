@@ -50,7 +50,7 @@ describe("Test avanzado",()=>{
         expect(cookie.value).to.be.ok
     })
     it("must return products", async function(){
-        const products = await requester.get("/api/http://localhost:8080/api/products").set("Cookie",[`${cookie.name}=${cookie.value}`]);
+        const products = await requester.get("/api/products").set("Cookie",[`${cookie.name}=${cookie.value}`]);
         console.log(products);
     })
 })
