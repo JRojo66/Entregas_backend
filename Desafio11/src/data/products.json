@@ -103,16 +103,5 @@
     ],
     "code": "abc129",
     "stock": 90
-  },
-  {
-    "id": 10,
-    "title": "producto prueba4",
-    "description": "este es un producto prueba4",
-    "price": 400,
-    "status": true,
-    "category": "Categoria prueba4",
-    "thumbnails": ["sin imagen3a", "sin imagen3b", "sin imagen3c"],
-    "code": "abc1213",
-    "stock": 40
   }
 ]

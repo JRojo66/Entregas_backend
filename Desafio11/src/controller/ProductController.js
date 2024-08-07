@@ -105,7 +105,6 @@ export class ProductController {
 
     if (!pquery.hasNextPage) {
       nextLink = null;
-      // console.log(nextLink);
     } else {
       nextLink = `http://localhost:8080/api/products?page=${
         page + 1
