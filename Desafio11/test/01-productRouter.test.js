@@ -7,21 +7,8 @@ import { productsModel } from "../src/dao/models/productsModel.js";
 
 const requester = supertest("http://localhost:8080")
 
-const connDB = async () => {
-    // Connects to mongoDb
-    try {
-      await mongoose.connect("mongodb+srv://backendCoderJRb:backend123@jr.rdtaukg.mongodb.net/?retryWrites=true&w=majority&appName=JR", {
-        dbName: "ecommerce",
-      });
-      console.log("DB Online...!!!"); ;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  connDB();
-
-
-describe("Test avanzado",()=>{
+describe("Test avanzado",function(){
+  this.timeout(10000);
     let cookie;
     it ("must login user and return COOKIE", async function(){
         const mockUser = {
