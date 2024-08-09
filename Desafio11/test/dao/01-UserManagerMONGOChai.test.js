@@ -17,7 +17,7 @@ const connDB = async () => {
   };
   connDB();
 
-  describe("Pruebas UserManagerMONGO - Chai",function(){
+  describe("Test UserManagerMONGO - Chai",function(){
     this.timeout(10000);
     
     before(function(){

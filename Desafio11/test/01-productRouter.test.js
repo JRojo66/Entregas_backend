@@ -1,13 +1,10 @@
 import {describe, it, before, afterEach} from "mocha";
 import { expect } from "chai";
 import supertest from "supertest";
-import mongoose from "mongoose";
-import { json } from "express";
-import { productsModel } from "../src/dao/models/productsModel.js";
 
 const requester = supertest("http://localhost:8080")
 
-describe("Test avanzado",function(){
+describe("Test product",function(){
   this.timeout(10000);
     let cookie;
     it ("must login user and return COOKIE", async function(){
