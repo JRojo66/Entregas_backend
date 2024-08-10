@@ -3,7 +3,7 @@ import { expect } from "chai";
 import supertest from "supertest";
 import { UserManagerMONGO } from "../src/dao/UserManagerMONGO.js";
 import mongoose from "mongoose";
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId, ObjectId } from "mongoose";
 
 const requester = supertest("http://localhost:8080");
 
@@ -16,18 +16,17 @@ describe("Test register", function () {
       .collection("users")
       .findOne({ email: "jorge@test.com" });
 
-    //console.log(mockUserToDelete);
+    await mongoose.connection
+      .collection("users")
+      .deleteMany({ email: mockUserToDelete.email });
 
     await mongoose.connection
       .collection("carts")
       .deleteMany({ _id: mockUserToDelete.cart });
-
-    await mongoose.connection
-      .collection("users")
-      .deleteMany({ email: "jorge@test.com" });
   });
 
-  it("must register user", async function () {
+  it("register must create user", async function () {
+    this.dao = new UserManagerMONGO();
     const mockUser = {
       name: "jorge",
       lastName: "Bergoglio",
@@ -54,5 +53,26 @@ describe("Test register", function () {
     expect(isValidObjectId(newUser._id)).to.exist;
     expect(expectedTimestamp).to.be.instanceOf(Date);
     expect(newUser.__v).to.exist;
+  });
+
+  it("must create cart", async function () {
+    this.dao = new UserManagerMONGO();
+    let mockUserFindCart = await mongoose.connection
+      .collection("users")
+      .findOne({ email: "jorge@test.com" });
+
+    const cart = await mongoose.connection
+      .collection("carts")
+      .findOne({ _id: mockUserFindCart.cart });
+
+    const expectedTimestamp1 = new Date(cart.CreatedAt);
+    const expectedTimestamp2 = new Date(cart.UpdatedAt);
+
+    expect(cart).to.not.be.null;
+    expect(Array.isArray(cart.products)).to.be.true;
+    expect(cart.products).to.be.empty;
+    expect(isValidObjectId(cart._id)).to.exist;
+    expect(expectedTimestamp1).to.be.instanceOf(Date);
+    expect(expectedTimestamp2).to.be.instanceOf(Date);
   });
 });
