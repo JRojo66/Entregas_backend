@@ -41,6 +41,7 @@ export class CartController {
 
   static getCartById = async (req, res) => {
     let cid = req.params.cid;
+    console.log(cid);
     if (!isValidObjectId(cid)) {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({ error: "Pls, enter a valid id..." });
