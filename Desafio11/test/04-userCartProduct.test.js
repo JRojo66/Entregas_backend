@@ -7,19 +7,22 @@ import { isValidObjectId, ObjectId } from "mongoose";
 
 const requester = supertest("http://localhost:8080");
 
-describe("Test User and Cart creation. Test Add products to cart", function () {
+describe("Test User and Cart creation. Test Add products to cart. Test purchase", function () {
   this.timeout(10000);
 
   after(async function () {
     this.dao = new UserManagerMONGO();
+    // Find created user
     let mockUserToDelete = await mongoose.connection
       .collection("users")
       .findOne({ email: "jorge@testzzz.com" });
 
+    // Delete created user    
     await mongoose.connection
       .collection("users")
       .deleteMany({ email: mockUserToDelete.email });
 
+    // Delete created user's cart    
     await mongoose.connection
       .collection("carts")
       .deleteMany({ _id: mockUserToDelete.cart });
@@ -59,7 +62,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     expect(newUser.__v).to.exist;
   });
 
-  it("must create cart", async function () {
+  it("must login with jwt create cart and purchase", async function () {
     this.dao = new UserManagerMONGO();
     let mockUserFindCart = await mongoose.connection
       .collection("users")
@@ -78,15 +81,8 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     expect(isValidObjectId(cart._id)).to.exist;
     expect(expectedTimestamp1).to.be.instanceOf(Date);
     expect(expectedTimestamp2).to.be.instanceOf(Date);
-  });
 
-  it("must add product to user's cart", async function () {
-    this.dao = new UserManagerMONGO();
-
-    let mockUserFindCart = await mongoose.connection
-      .collection("users")
-      .findOne({ email: "jorge@testzzz.com" });
-
+    // Test loginjwt
     const login = {
       email: "jorge@testzzz.com",
       password: "123",
@@ -104,9 +100,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     expect(cookie.name).to.be.ok.and.equal("codercookie");
     expect(cookie.value).to.be.ok;
 
-    const cart = await mongoose.connection
-      .collection("carts")
-      .findOne({ _id: mockUserFindCart.cart });
+    // Test create cart  
     const cid = cart._id;
     const resultAdd = await requester
       .post("/api/cart/" + cid + "/product/662c3576518100669b538deb")
@@ -130,8 +124,6 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
       expect(mockTicket.products[0].qty).to.be.equal(1)
 
   });
-
-
 
 });
 
