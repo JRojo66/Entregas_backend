@@ -16,7 +16,6 @@ export class SessionsController {
 
   static register = async (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    console.log("req.user",req.user);
     return res.status(201).json({ message: "Register OK", newUser: req.user });
   };
 
@@ -39,9 +38,7 @@ export class SessionsController {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({payload:"Enter email and password"});}
     let user = await userManager.getBy({ email });
-    if (!user) return res.status(400).send(`Wrong credentials...There is no user with that mail...!!!`);
-    console.log(user.password);
-    
+    if (!user) return res.status(400).send(`Wrong credentials...There is no user with that mail...!!!`)
     user = new UserDTO(user);
     user = { ...user };
     let token = jwt.sign(user, SECRET, { expiresIn: "1h" });
@@ -85,9 +82,6 @@ export class SessionsController {
           html: `<a href="http://localhost:8080/passwordResetForm/?token=${tokenpwr}">Reset your password</a>`
       }
   )
-  //.then(result => console.log(result))                          quitar     
-  //.catch(error => console.log(error))
-
     res.setHeader('Content-Type','application/json');
     return res.status(200).json({payload: `An email was sent to ${user.email}. Check your spambox if not received. Follow instructions`});      
     } catch (error) {

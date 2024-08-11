@@ -23,8 +23,8 @@ let userFormatOK = new UserDTO({});
 export class UserDTOfirstLettertoUpperCase {
     constructor(user) {
         if (user.name && user.lastName) {
-            this.name = user.name.charAt(0).toUpperCase() + user.name.slice(1);
-            this.lastName = user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1);
+            this.name = user.name.charAt(0).toUpperCase() + user.name.slice(1).toLowerCase();
+            this.lastName = user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1).toLowerCase();
             this.email = user.email;
             this.age = user.age;
             this.role = user.role;
