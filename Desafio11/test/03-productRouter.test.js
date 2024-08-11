@@ -11,7 +11,7 @@ describe("Test get products from protected route", function () {
   it("must login user and return COOKIE", async function () {
     const mockUser = {
       email: "adminCoder@coder.com",
-      password: "123",
+      password: "adminCod3r123", // ** ???
     };
     const result = await requester
       .post("/api/sessions/loginjwt")

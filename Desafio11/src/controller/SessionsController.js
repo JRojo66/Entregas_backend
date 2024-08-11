@@ -33,13 +33,15 @@ export class SessionsController {
     }
   };
 
-  static loginJWT = async (req, res) => {
+  static loginJWT = async (req, res) => {                                                                       // ** Validar pwd
     let { email, password } = req.body;
     if (!email || !password){
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({payload:"Enter email and password"});}
     let user = await userManager.getBy({ email });
     if (!user) return res.status(400).send(`Wrong credentials...There is no user with that mail...!!!`);
+    console.log(user.password);
+    
     user = new UserDTO(user);
     user = { ...user };
     let token = jwt.sign(user, SECRET, { expiresIn: "1h" });

@@ -7,7 +7,7 @@ import { isValidObjectId, ObjectId } from "mongoose";
 
 const requester = supertest("http://localhost:8080");
 
-describe("Test register", function () {
+describe("Test User and Cart creation. Test Add products to cart", function () {
   this.timeout(10000);
 
   after(async function () {
@@ -74,5 +74,46 @@ describe("Test register", function () {
     expect(isValidObjectId(cart._id)).to.exist;
     expect(expectedTimestamp1).to.be.instanceOf(Date);
     expect(expectedTimestamp2).to.be.instanceOf(Date);
+  });
+
+  it("must add product to user's cart", async function () {
+    this.dao = new UserManagerMONGO();
+
+    let mockUserFindCart = await mongoose.connection
+      .collection("users")
+      .findOne({ email: "jorge@test.com" });
+
+    const loginAdmin = {
+      email: "jorge@test.com",
+      password: "123",
+    };
+    const result = await requester
+      .post("/api/sessions/loginjwt")
+      .send(loginAdmin);
+
+    const cookieResult = result.headers["set-cookie"][0];
+    expect(cookieResult).to.be.ok;
+    const cookie = {
+      name: cookieResult.split("=")[0],
+      value: cookieResult.split("=")[1],
+    };
+    expect(cookie.name).to.be.ok.and.equal("codercookie");
+    expect(cookie.value).to.be.ok;
+
+    const cart = await mongoose.connection
+      .collection("carts")
+      .findOne({ _id: mockUserFindCart.cart });
+    const cid = cart._id;
+    const resultAdd = await requester
+      .post("/api/cart/" + cid + "/product/662c3576518100669b538deb")
+      .set("Cookie", [`${cookie.name}=${cookie.value}`])
+      .expect(200);
+    const cartwithProduct = await mongoose.connection
+      .collection("carts")
+      .findOne({ _id: mockUserFindCart.cart });
+    expect(cartwithProduct.products[0].product.toString()).to.equal(
+      "662c3576518100669b538deb"
+    );
+    expect(cartwithProduct.products[0].qty).to.equal(1);
   });
 });
