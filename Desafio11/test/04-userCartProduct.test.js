@@ -23,6 +23,10 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     await mongoose.connection
       .collection("carts")
       .deleteMany({ _id: mockUserToDelete.cart });
+
+      await mongoose.connection
+      .collection("tickets")
+      .deleteMany({ purchaser: "jorge@test.com" });
   });
 
   it("register must create user", async function () {
@@ -83,13 +87,13 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
       .collection("users")
       .findOne({ email: "jorge@test.com" });
 
-    const loginAdmin = {
+    const login = {
       email: "jorge@test.com",
       password: "123",
     };
     const result = await requester
       .post("/api/sessions/loginjwt")
-      .send(loginAdmin);
+      .send(login);
 
     const cookieResult = result.headers["set-cookie"][0];
     expect(cookieResult).to.be.ok;
@@ -115,5 +119,20 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
       "662c3576518100669b538deb"
     );
     expect(cartwithProduct.products[0].qty).to.equal(1);
+
+    // Test Purchase
+    const MockTicket = await requester
+      .post("/api/cart/"+cid+"/purchase")
+      const mockTicket = await mongoose.connection
+      .collection("tickets")
+      .findOne({purchaser: "jorge@test.com"});
+      expect(mockTicket.products[0].product.toString()).to.be.equal("662c3576518100669b538deb")
+      expect(mockTicket.products[0].qty).to.be.equal(1)
+
   });
+
+
+
 });
+
+
