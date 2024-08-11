@@ -14,7 +14,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     this.dao = new UserManagerMONGO();
     let mockUserToDelete = await mongoose.connection
       .collection("users")
-      .findOne({ email: "jorge@test.com" });
+      .findOne({ email: "jorge@testzzz.com" });
 
     await mongoose.connection
       .collection("users")
@@ -26,7 +26,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
 
       await mongoose.connection
       .collection("tickets")
-      .deleteMany({ purchaser: "jorge@test.com" });
+      .deleteMany({ purchaser: "jorge@testzzz.com" });
   });
 
   it("register must create user", async function () {
@@ -34,7 +34,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     const mockUser = {
       name: "jorge",
       lastName: "Bergoglio",
-      email: "jorge@test.com",
+      email: "jorge@testzzz.com",
       age: "82",
       password: "123",
     };
@@ -50,7 +50,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     expect(responseExpect.message).to.equal("Register OK");
     expect(newUser.name).to.equal("Jorge");
     expect(newUser.lastName).to.equal("Bergoglio");
-    expect(newUser.email).to.equal("jorge@test.com");
+    expect(newUser.email).to.equal("jorge@testzzz.com");
     expect(newUser.age).to.equal(82);
     expect(newUser.password).to.equal("********");
     expect(isValidObjectId(newUser.cart)).to.exist;
@@ -63,7 +63,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
     this.dao = new UserManagerMONGO();
     let mockUserFindCart = await mongoose.connection
       .collection("users")
-      .findOne({ email: "jorge@test.com" });
+      .findOne({ email: "jorge@testzzz.com" });
 
     const cart = await mongoose.connection
       .collection("carts")
@@ -85,10 +85,10 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
 
     let mockUserFindCart = await mongoose.connection
       .collection("users")
-      .findOne({ email: "jorge@test.com" });
+      .findOne({ email: "jorge@testzzz.com" });
 
     const login = {
-      email: "jorge@test.com",
+      email: "jorge@testzzz.com",
       password: "123",
     };
     const result = await requester
@@ -125,7 +125,7 @@ describe("Test User and Cart creation. Test Add products to cart", function () {
       .post("/api/cart/"+cid+"/purchase")
       const mockTicket = await mongoose.connection
       .collection("tickets")
-      .findOne({purchaser: "jorge@test.com"});
+      .findOne({purchaser: "jorge@testzzz.com"});
       expect(mockTicket.products[0].product.toString()).to.be.equal("662c3576518100669b538deb")
       expect(mockTicket.products[0].qty).to.be.equal(1)
 
