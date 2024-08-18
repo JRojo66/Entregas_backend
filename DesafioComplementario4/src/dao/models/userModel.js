@@ -25,7 +25,20 @@ const usersSchema = new mongoose.Schema(
         type: [{
             name: String,
             reference: String
-          }],
+          },
+        ],
+        default: [{
+          name:"identificacion",
+          reference:""},
+          {
+          name:"comprobanteDeDomicilio",
+          reference:""
+          },
+          {
+          name:"combrobanteDeEstadoDeCuenta",
+          reference:""
+          },
+        ]
     },
   },
   {

@@ -56,3 +56,8 @@
 {"level":"error","message":"last_connection is not defined"}
 {"level":"error","message":"Only images admitted...!"}
 {"level":"error","message":"Only images or documents admitted...!"}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Failed to lookup view \"/src/views/layouts/attachFiles/attachFilesProflie\" in views directory \"C:\\Documents\\Docus\\Documents\\Nueva_etapa\\IT\\Coderhouse\\Backend\\Entregas\\DesafioComplementario4\\src/views\""}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Unexpected field"}

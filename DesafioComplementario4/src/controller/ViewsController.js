@@ -128,6 +128,26 @@ export class ViewsController {
     res.status(200).render("attachFiles");
   }
 
+  static attachFilesProfile = async (req, res) => {
+    res.status(200).render("attachFilesProfile");
+  }
+
+  static attachFilesProduct = async (req, res) => {
+    res.status(200).render("attachFilesProduct");
+  }
+
+  static attachFilesIdentification = async (req, res) => {
+    res.status(200).render("attachFilesIdentification");
+  }
+
+  static attachFilesAddressProof = async (req, res) => {
+    res.status(200).render("attachFilesAddressProof");
+  }
+
+  static attachFilesBankStatement = async (req, res) => {
+    res.status(200).render("attachFilesBankStatement");
+  }
+
   static chat = async(req,res) => {
     res.status(200).render("chat")
   }

@@ -37,7 +37,7 @@ export class SessionsController {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({ payload: "Enter email and password" });
     }
-    let user = await userManager.getBy({ email });
+    let user = await userManager.getBy({ email });                                                        // Pasar a service
     if (!user)
       return res
         .status(400)
@@ -59,7 +59,7 @@ export class SessionsController {
       const token = req.cookies.codercookie;
       const user = jwt.verify(token, SECRET);
       const email = user.email;
-      await userManager.update({ email }, { last_connection: new Date() });
+      await userManager.update({ email }, { last_connection: new Date() });                                     //Pasar a userService
       res.clearCookie("codercookie");
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json({ payload: `Bye ${user.name}, hope to see you back soon!` });
@@ -203,4 +203,60 @@ export class SessionsController {
       });
     }
   };
+
+  static addDocument = async (req,res)=>{
+    console.log(req.body.fileInfo);                                                                                          // clg
+     
+                const destinationPath = "./src/"+req.body.fileInfo
+                console.log(destinationPath);      
+                console.log(req.user._id);         
+                console.log(req.params.uid);                                                                  // clg
+                let userId;
+                if(req.params.uid = "web"){
+                    userId=req.user._id;                    
+                } else {
+                    userId = req.params.uid;
+                }
+                console.log("userId: ",userId);                                                             // clg
+                console.log("fileInfo: ",req.body.fileInfo);                                                    // clg
+                try {
+                const user = await userManager.getBy({_id: userId})
+                //console.log("user: ",user);                                                                              // clg
+                // actualizar documents
+                let documents = user.documents;
+                //console.log(documents);                                                                     // clg
+                for (let i = 0; i < documents.length; i++) {
+                  //console.log("fileInfo: ",req.body.fileInfo);                                                  // clg
+                  //console.log(documents[i].name);                                                                          // clg
+                  if (req.body.fileInfo === documents[i].name){
+                    console.log("insertar en ", req.body.fileInfo);                                                 // clg
+                  }
+                }
+                } catch (error) {
+                  res.setHeader('Content-Type','application/json');
+                  return res.status(500).json(
+                    {
+                      error:`Unexpected server error - contact your administrator`,
+                    }
+                  )
+                  
+                }
+
+
+
+            //     console.log("./src/profiles")
+            //       fs.rename("./src/uploads", "./src/profiles", (err) => {
+            //      if (err) {
+            //          console.log(err);
+            //      } else {
+            //          console.log('Archivo movido correctamente');                                                                //clg
+            //      }
+            //   });
+         
+     
+    res.setHeader('Content-Type','application/json');
+    return res.status(200).json({payload:"File saved...!!!"});
 }
+
+}
+

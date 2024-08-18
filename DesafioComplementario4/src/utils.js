@@ -6,6 +6,7 @@ import winston from "winston";
 import { config } from './config/config.js';
 import multer from "multer"
 
+
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = dirname(__filename);
 
@@ -68,6 +69,12 @@ export const middLogger = (res, req, next) => {
 // Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    //console.log(req);
+    console.log("req.body.fileInfo",req.body.fileInfo);                                           // clg
+    //console.log("fileInfo2: ",fileInfo);                                     // clg
+    console.log("file.fieldname: ",file.fieldname);                            // clg
+    console.log("file.name",req.name);                                         // clg 
+    console.log("file.fileinfo",file.fileInfo);                                // clg 
       cb(null, './src/uploads')
   },
   filename: function (req, file, cb) {
@@ -76,7 +83,8 @@ const storage = multer.diskStorage({
       if(type!=="image" && type!=="application"){
           return cb(new Error("Only images or documents admitted...!"))
       }
-      cb(null, Date.now() +"-"+file.originalname )
+      const fileSavedName = Date.now()+"-"+file.originalname;
+      cb(null, fileSavedName )
   }
   
 })
