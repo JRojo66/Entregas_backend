@@ -70,21 +70,40 @@ export const middLogger = (res, req, next) => {
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     //console.log(req);
-    console.log("req.body.fileInfo",req.body.fileInfo);                                           // clg
+    //console.log("req.body.fileInfo",req.body.fileInfo);                      // clg
     //console.log("fileInfo2: ",fileInfo);                                     // clg
-    console.log("file.fieldname: ",file.fieldname);                            // clg
-    console.log("file.name",req.name);                                         // clg 
-    console.log("file.fileinfo",file.fileInfo);                                // clg 
-      cb(null, './src/uploads')
+    //console.log("file.fieldname: ",file.fieldname);                          // clg
+    req.fileDoc = file.fieldname
+    if(file.fieldname==="profile"){
+      cb(null, './src/profiles')
+      req.fileSavedPath = './src/profiles';
+      req.fileSavedDoc = 'profile'
+    } else {
+      if(file.fieldname==="product"){
+        cb(null, './src/products')
+        req.fileSavedPath = './src/products';
+        req.fileSavedDoc = 'product'
+      } else {
+        if(file.fieldname==="identification" || file.fieldname==="addressProof" || file.fieldname==="bankStatement"){
+          cb(null, './src/documents')
+          req.fileSavedPath = './src/documents';
+                  req.fileSavedDoc = ''
+        } 
+        else {
+          cb(null, './src/uploads')
+          req.fileSavedPath = './src/uploads';
+        }
+      }
+    }
   },
   filename: function (req, file, cb) {
-
       let type=file.mimetype.split("/")[0]
       if(type!=="image" && type!=="application"){
           return cb(new Error("Only images or documents admitted...!"))
       }
       const fileSavedName = Date.now()+"-"+file.originalname;
       cb(null, fileSavedName )
+      req.fileSavedName = fileSavedName;
   }
   
 })

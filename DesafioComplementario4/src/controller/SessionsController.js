@@ -37,7 +37,7 @@ export class SessionsController {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({ payload: "Enter email and password" });
     }
-    let user = await userManager.getBy({ email });                                                        // Pasar a service
+    let user = await userManager.getBy({ email }); // Pasar a service
     if (!user)
       return res
         .status(400)
@@ -59,10 +59,12 @@ export class SessionsController {
       const token = req.cookies.codercookie;
       const user = jwt.verify(token, SECRET);
       const email = user.email;
-      await userManager.update({ email }, { last_connection: new Date() });                                     //Pasar a userService
+      await userManager.update({ email }, { last_connection: new Date() });                                               //Pasar a userService
       res.clearCookie("codercookie");
       res.setHeader("Content-Type", "application/json");
-      return res.status(200).json({ payload: `Bye ${user.name}, hope to see you back soon!` });
+      return res
+        .status(200)
+        .json({ payload: `Bye ${user.name}, hope to see you back soon!` });
     } catch (error) {
       console.log(error);
       res.setHeader("Content-Type", "application/json");
@@ -101,11 +103,9 @@ export class SessionsController {
         html: `<a href="http://localhost:8080/passwordResetForm/?token=${tokenpwr}">Reset your password</a>`,
       });
       res.setHeader("Content-Type", "application/json");
-      return res
-        .status(200)
-        .json({
-          payload: `An email was sent to ${user.email}. Check your spambox if not received. Follow instructions`,
-        });
+      return res.status(200).json({
+        payload: `An email was sent to ${user.email}. Check your spambox if not received. Follow instructions`,
+      });
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
@@ -180,7 +180,9 @@ export class SessionsController {
   static premium = async (req, res) => {
     try {
       let uid = req.params.uid;
-      let user = await userManager.getBy({ _id: uid });
+      let user = await userManager.getBy({ _id: uid });                 //** Seguir aca. Que cambie a premium solo si los tres reference son distinto de vacio */
+
+      user = await userManager.getBy({ _id: uid });
       if (user.role === "premium") {
         await userService.updateUser({ _id: uid }, { role: "user" });
         res.setHeader("Content-Type", "application/json");
@@ -189,6 +191,7 @@ export class SessionsController {
           .json({ payload: `User ${user.email} is now user` });
       }
       if (user.role === "user") {
+
         await userService.updateUser({ _id: uid }, { role: "premium" });
         res.setHeader("Content-Type", "application/json");
         return res
@@ -204,59 +207,46 @@ export class SessionsController {
     }
   };
 
-  static addDocument = async (req,res)=>{
-    console.log(req.body.fileInfo);                                                                                          // clg
-     
-                const destinationPath = "./src/"+req.body.fileInfo
-                console.log(destinationPath);      
-                console.log(req.user._id);         
-                console.log(req.params.uid);                                                                  // clg
-                let userId;
-                if(req.params.uid = "web"){
-                    userId=req.user._id;                    
-                } else {
-                    userId = req.params.uid;
-                }
-                console.log("userId: ",userId);                                                             // clg
-                console.log("fileInfo: ",req.body.fileInfo);                                                    // clg
-                try {
-                const user = await userManager.getBy({_id: userId})
-                //console.log("user: ",user);                                                                              // clg
-                // actualizar documents
-                let documents = user.documents;
-                //console.log(documents);                                                                     // clg
-                for (let i = 0; i < documents.length; i++) {
-                  //console.log("fileInfo: ",req.body.fileInfo);                                                  // clg
-                  //console.log(documents[i].name);                                                                          // clg
-                  if (req.body.fileInfo === documents[i].name){
-                    console.log("insertar en ", req.body.fileInfo);                                                 // clg
-                  }
-                }
-                } catch (error) {
-                  res.setHeader('Content-Type','application/json');
-                  return res.status(500).json(
-                    {
-                      error:`Unexpected server error - contact your administrator`,
-                    }
-                  )
-                  
-                }
+  static addDocument = async (req, res) => {
+    const destinationPath = "./src/" + req.body.fileInfo;
+    let userId;
+    if ((req.params.uid = "web")) {
+      userId = req.user._id;
+    } else {
+      userId = req.params.uid;
+    }
+    const reference = req.fileSavedPath + "/" + req.fileSavedName;
+    console.log("fileDoc", req.fileDoc);
+    try {
+      const user = await userManager.getBy({ _id: userId });
+      let documents = user.documents;
+      switch (req.fileDoc) {
+        case "profile":
+          break;
+        case "product":
+          console.log(req.fileDoc);
+          break;
+        case "identification":
+          documents[0].reference = reference;
+          break;
+        case "addressProof":
+          console.log(req.fileDoc);
+          documents[1].reference = reference;
+          break;
+        case "bankStatement":
+          documents[2].reference = reference;
 
-
-
-            //     console.log("./src/profiles")
-            //       fs.rename("./src/uploads", "./src/profiles", (err) => {
-            //      if (err) {
-            //          console.log(err);
-            //      } else {
-            //          console.log('Archivo movido correctamente');                                                                //clg
-            //      }
-            //   });
-         
-     
-    res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:"File saved...!!!"});
+          break;
+        default:
+      }
+      await userManager.update({ _id: userId }, { documents });
+    } catch (error) {
+      res.setHeader("Content-Type", "application/json");
+      return res.status(500).json({
+        error: `Unexpected server error - contact your administrator`,
+      });
+    }
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ payload: "File saved...!!!" });
+  };
 }
-
-}
-

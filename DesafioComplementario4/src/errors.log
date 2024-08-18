@@ -61,3 +61,10 @@
 {"level":"error","message":"Unexpected field"}
 {"level":"error","message":"Unexpected field"}
 {"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"ENOENT: no such file or directory, open 'C:\\Documents\\Docus\\Documents\\Nueva_etapa\\IT\\Coderhouse\\Backend\\Entregas\\DesafioComplementario4\\src\\product\\1724008658005-windsurfImage.jpg'"}
+{"level":"error","message":"Unexpected field"}
+{"level":"error","message":"Failed to lookup view \"attachFilesBankStatement\" in views directory \"C:\\Documents\\Docus\\Documents\\Nueva_etapa\\IT\\Coderhouse\\Backend\\Entregas\\DesafioComplementario4\\src/views\""}
+{"level":"error","message":"{\n     \"title\": \"Error connecting to DB \",\n     \"name\": \"Error\",\n     \"message\": \"querySrv ETIMEOUT _mongodb._tcp.jr.rdtaukg.mongodb.net\",\n     \"stack\": \"Error: querySrv ETIMEOUT _mongodb._tcp.jr.rdtaukg.mongodb.net\\n    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:291:17)\"\n}"}
+{"level":"error","message":"{\n     \"title\": \"Error connecting to DB \",\n     \"name\": \"Error\",\n     \"message\": \"querySrv ETIMEOUT _mongodb._tcp.jr.rdtaukg.mongodb.net\",\n     \"stack\": \"Error: querySrv ETIMEOUT _mongodb._tcp.jr.rdtaukg.mongodb.net\\n    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:291:17)\"\n}"}
