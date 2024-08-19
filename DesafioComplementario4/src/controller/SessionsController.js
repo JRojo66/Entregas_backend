@@ -180,9 +180,8 @@ export class SessionsController {
   static premium = async (req, res) => {
     try {
       let uid = req.params.uid;
-      let user = await userManager.getBy({ _id: uid });                 //** Seguir aca. Que cambie a premium solo si los tres reference son distinto de vacio */
-
-      user = await userManager.getBy({ _id: uid });
+      let user = await userManager.getBy({ _id: uid });
+      console.log(user);
       if (user.role === "premium") {
         await userService.updateUser({ _id: uid }, { role: "user" });
         res.setHeader("Content-Type", "application/json");
@@ -190,13 +189,16 @@ export class SessionsController {
           .status(200)
           .json({ payload: `User ${user.email} is now user` });
       }
-      if (user.role === "user") {
-
+      if (user.role === "user" && user.documents[0].reference!=="" && user.documents[1].reference!=="" && user.documents[2].reference!=="") {
+        console.log("user.documents[0]",user.documents[0].reference);                                                    // clg
         await userService.updateUser({ _id: uid }, { role: "premium" });
         res.setHeader("Content-Type", "application/json");
         return res
           .status(200)
           .json({ payload: `User ${user.email} is now premium` });
+      } else {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`Role is not premium nor user or missing or incomplete documents...!!!`})
       }
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
@@ -208,15 +210,17 @@ export class SessionsController {
   };
 
   static addDocument = async (req, res) => {
-    const destinationPath = "./src/" + req.body.fileInfo;
     let userId;
+    if(!req.fileDoc){
+      res.setHeader('Content-Type','application/json');
+      return res.status(400).json({error:`Choose file and try again...!!!`})
+    }
     if ((req.params.uid = "web")) {
       userId = req.user._id;
     } else {
       userId = req.params.uid;
     }
     const reference = req.fileSavedPath + "/" + req.fileSavedName;
-    console.log("fileDoc", req.fileDoc);
     try {
       const user = await userManager.getBy({ _id: userId });
       let documents = user.documents;

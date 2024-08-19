@@ -69,10 +69,6 @@ export const middLogger = (res, req, next) => {
 // Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    //console.log(req);
-    //console.log("req.body.fileInfo",req.body.fileInfo);                      // clg
-    //console.log("fileInfo2: ",fileInfo);                                     // clg
-    //console.log("file.fieldname: ",file.fieldname);                          // clg
     req.fileDoc = file.fieldname
     if(file.fieldname==="profile"){
       cb(null, './src/profiles')
